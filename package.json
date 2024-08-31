@@ -1,0 +1,24 @@
+{
+  "name": "fcitx5-config-vue",
+  "type": "module",
+  "version": "0.1.0",
+  "license": "AGPL-3.0-or-later",
+  "main": "dist/index.js",
+  "scripts": {
+    "lint": "eslint",
+    "lint:fix": "eslint --fix",
+    "check": "vue-tsc --noEmit",
+    "build": "vite build && vue-tsc -d --emitDeclarationOnly"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "^2.27.1",
+    "@vitejs/plugin-vue": "^5.1.2",
+    "eslint": "^9.9.1",
+    "fcitx5-js": "file:cache/fcitx5-js-0.1.0.tgz",
+    "naive-ui": "^2.39.0",
+    "typescript": "^5.5.4",
+    "vite": "^5.4.2",
+    "vue": "^3.4.38",
+    "vue-tsc": "^2.0.29"
+  }
+}
