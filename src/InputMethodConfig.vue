@@ -55,7 +55,7 @@ const adding = ref(false)
 
 const selectedLanguage = ref<string | null>(null)
 
-const availableInputMethodOptions = ref<{
+const languageOptions = ref<{
   label: string
   key: string
 }[]>([])
@@ -77,7 +77,7 @@ watchEffect(() => {
       displayName: im.displayName,
     })
   }
-  availableInputMethodOptions.value = []
+  languageOptions.value = []
   const sortedLanguageCodes = Object.keys(map).sort((a: string, b: string) => {
     if (!a) {
       return 1
@@ -96,15 +96,15 @@ watchEffect(() => {
     return la.localeCompare(lb)
   })
   for (const languageCode of sortedLanguageCodes) {
-    availableInputMethodOptions.value.push({
-      label: languageCode ? (languageName.of(languageCode) ?? languageCode) : languageCode,
+    languageOptions.value.push({
+      label: languageCode ? (languageName.of(languageCode) ?? languageCode) : 'Unknown',
       key: languageCode,
     })
   }
 })
 
 const inputMethodsForLanguage = computed(() => {
-  if (!selectedLanguage.value) {
+  if (selectedLanguage.value === null) {
     return []
   }
   const enabledIMs = props.inputMethods.map(({ name }) => name)
@@ -118,6 +118,16 @@ function add() {
   window.fcitx.updateStatusArea()
   imsToAdd.value = []
 }
+
+const onlyShowCurrentLanguage = ref(false)
+
+const filteredLanguageOptions = computed(() => {
+  if (onlyShowCurrentLanguage.value) {
+    const currentLanguage = navigator.language.split('-')[0]
+    return languageOptions.value.filter(({ key }) => key.split('-')[0] === currentLanguage)
+  }
+  return languageOptions.value
+})
 </script>
 
 <template>
@@ -131,12 +141,22 @@ function add() {
       @collapse="collapsed = true"
       @expand="collapsed = false"
     >
-      <div v-if="adding">
-        <NMenu
-          v-model:value="selectedLanguage"
-          :options="availableInputMethodOptions"
-        />
-      </div>
+      <NLayout v-if="adding" style="height: 100%">
+        <NLayout position="absolute" style="bottom: 50px">
+          <NMenu
+            v-model:value="selectedLanguage"
+            :options="filteredLanguageOptions"
+          />
+        </NLayout>
+        <NLayoutFooter position="absolute">
+          <NCheckbox
+            v-model:checked="onlyShowCurrentLanguage"
+            style="height: 50px; display: flex; justify-content: center; align-items: center"
+          >
+            Only show current language
+          </NCheckbox>
+        </NLayoutFooter>
+      </NLayout>
       <div
         v-else
         style="display: flex; flex-direction: column; justify-content: space-between; height: 100%"
@@ -156,7 +176,13 @@ function add() {
     </NLayoutSider>
     <NLayout style="min-height: 480px; max-height: calc(100vh - 100px)">
       <template v-if="adding">
-        <NLayout position="absolute" style="bottom: 50px; padding: 16px 0 16px 16px">
+        <div
+          v-if="selectedLanguage === null"
+          style="display: flex; justify-content: center; align-items: center; height: calc(100% - 50px);"
+        >
+          Select a language from the left list
+        </div>
+        <NLayout v-else position="absolute" style="bottom: 50px; padding: 16px 0 16px 16px">
           <NCheckboxGroup v-model:value="imsToAdd">
             <NFlex vertical>
               <NCheckbox
