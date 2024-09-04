@@ -13,6 +13,7 @@ export default defineConfig({
       external: [
         'vue',
         'naive-ui',
+        'vooks',
       ],
     },
   },

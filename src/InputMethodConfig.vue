@@ -4,6 +4,7 @@ import type { MenuOption } from 'naive-ui'
 import { NButton, NCheckbox, NCheckboxGroup, NFlex, NLayout, NLayoutFooter, NLayoutSider, NMenu } from 'naive-ui'
 import MinusButton from './MinusButton.vue'
 import PlusButton from './PlusButton.vue'
+import BasicConfig from './BasicConfig.vue'
 
 const languageName = new Intl.DisplayNames(navigator.language, { type: 'language' })
 </script>
@@ -15,9 +16,13 @@ const props = defineProps<{
     displayName: string
     name: string
   }[]
+  onClose: () => void
 }>()
 
 const selectedInputMethod = ref(props.inputMethod)
+const uri = computed(() => `fcitx://config/inputmethod/${selectedInputMethod.value}`)
+
+const config = computed(() => window.fcitx.getConfig(uri.value))
 
 const options = computed(() =>
   props.inputMethods.map(({ displayName, name }) => ({
@@ -128,6 +133,17 @@ const filteredLanguageOptions = computed(() => {
   }
   return languageOptions.value
 })
+
+const basicConfig = ref()
+
+function apply() {
+  window.fcitx.setConfig(uri.value, basicConfig.value.get())
+}
+
+function confirm() {
+  apply()
+  props.onClose()
+}
 </script>
 
 <template>
@@ -182,8 +198,11 @@ const filteredLanguageOptions = computed(() => {
         >
           Select a language from the left list
         </div>
-        <NLayout v-else position="absolute" style="bottom: 50px; padding: 16px 0 16px 16px">
-          <NCheckboxGroup v-model:value="imsToAdd">
+        <NLayout v-else position="absolute" style="bottom: 50px">
+          <NCheckboxGroup
+            v-model:value="imsToAdd"
+            style="margin: 16px"
+          >
             <NFlex vertical>
               <NCheckbox
                 v-for="im of inputMethodsForLanguage"
@@ -196,8 +215,7 @@ const filteredLanguageOptions = computed(() => {
         </NLayout>
         <NLayoutFooter position="absolute">
           <NFlex
-            justify="end"
-            style="padding: 8px"
+            style="padding: 8px; justify-content: space-between"
           >
             <NButton secondary @click="adding = false">
               Cancel
@@ -213,9 +231,51 @@ const filteredLanguageOptions = computed(() => {
           </NFlex>
         </NLayoutFooter>
       </template>
-      <div v-else>
-        {{ selectedInputMethod }}
-      </div>
+      <template v-else>
+        <NLayout position="absolute" style="bottom: 50px">
+          <BasicConfig
+            ref="basicConfig"
+            :path="selectedInputMethod"
+            :config="config"
+            style="margin: 16px"
+          />
+        </NLayout>
+        <NLayoutFooter position="absolute">
+          <NFlex
+            style="padding: 8px; justify-content: space-between"
+          >
+            <NFlex>
+              <NButton
+                secondary
+                @click="basicConfig.reset()"
+              >
+                Reset to default
+              </NButton>
+              <NButton
+                secondary
+                @click="onClose()"
+              >
+                Cancel
+              </NButton>
+            </NFlex>
+            <NFlex>
+              <NButton
+                secondary
+                @click="apply()"
+              >
+                Apply
+              </NButton>
+              <NButton
+                secondary
+                type="info"
+                @click="confirm()"
+              >
+                OK
+              </NButton>
+            </NFlex>
+          </NFlex>
+        </NLayoutFooter>
+      </template>
     </NLayout>
   </NLayout>
 </template>
