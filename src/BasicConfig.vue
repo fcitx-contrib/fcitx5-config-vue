@@ -4,6 +4,7 @@ import { NAlert, NForm, NFormItem } from 'naive-ui'
 import type { Config } from 'fcitx5-js'
 import IntegerOption from './option/IntegerOption.vue'
 import BooleanOption from './option/BooleanOption.vue'
+import EnumOption from './option/EnumOption.vue'
 import UnknownOption from './option/UnknownOption.vue'
 import { isMobile } from './util'
 
@@ -20,6 +21,8 @@ function toComponent(type: string) {
       return IntegerOption
     case 'Boolean':
       return BooleanOption
+    case 'Enum':
+      return EnumOption
     default:
       return UnknownOption
   }
