@@ -1,6 +1,7 @@
 <script lang="ts">
 import { computed, h, ref, watchEffect } from 'vue'
 import type { MenuOption } from 'naive-ui'
+import type { Config } from 'fcitx5-js'
 import { NButton, NCheckbox, NCheckboxGroup, NFlex, NLayout, NLayoutFooter, NLayoutSider, NMenu } from 'naive-ui'
 import MinusButton from './MinusButton.vue'
 import PlusButton from './PlusButton.vue'
@@ -134,10 +135,32 @@ const filteredLanguageOptions = computed(() => {
   return languageOptions.value
 })
 
-const basicConfig = ref()
+const form = ref({})
+
+function extractValue(config: Config, reset: boolean) {
+  const value: { [key: string]: any } = {}
+  if ('Children' in config) {
+    for (const child of config.Children) {
+      value[child.Option] = reset
+        ? (
+            'DefaultValue' in child ? child.DefaultValue : extractValue(child, true)
+          )
+        : child.Value
+    }
+  }
+  return value
+}
+
+watchEffect(() => {
+  form.value = extractValue(config.value, false)
+})
+
+function reset() {
+  form.value = extractValue(config.value, true)
+}
 
 function apply() {
-  window.fcitx.setConfig(uri.value, basicConfig.value.get())
+  window.fcitx.setConfig(uri.value, form.value)
 }
 
 function confirm() {
@@ -234,10 +257,11 @@ function confirm() {
       <template v-else>
         <NLayout position="absolute" style="bottom: 50px">
           <BasicConfig
-            ref="basicConfig"
             :path="selectedInputMethod"
             :config="config"
+            :value="form"
             style="margin: 16px"
+            @update="v => form = v"
           />
         </NLayout>
         <NLayoutFooter position="absolute">
@@ -247,7 +271,7 @@ function confirm() {
             <NFlex>
               <NButton
                 secondary
-                @click="basicConfig.reset()"
+                @click="reset()"
               >
                 Reset to default
               </NButton>

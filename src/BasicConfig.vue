@@ -1,61 +1,39 @@
 <script setup lang="ts">
-import { computed, ref, watchEffect } from 'vue'
+import { computed } from 'vue'
 import { NAlert, NForm, NFormItem } from 'naive-ui'
 import type { Config } from 'fcitx5-js'
 import IntegerOption from './option/IntegerOption.vue'
 import BooleanOption from './option/BooleanOption.vue'
 import EnumOption from './option/EnumOption.vue'
+import GroupOption from './option/GroupOption.vue'
 import UnknownOption from './option/UnknownOption.vue'
 import { isMobile } from './util'
 
-const props = defineProps<{
+defineProps<{
   path: string
   config: Config
+  value: any
+  onUpdate: (value: any) => void
 }>()
 
 const labelPlacement = computed(() => isMobile.value ? 'top' : 'left')
 
-function toComponent(type: string) {
-  switch (type) {
+function toComponent(child: { Type: string, Children: any[] | null }) {
+  switch (child.Type) {
     case 'Integer':
       return IntegerOption
     case 'Boolean':
       return BooleanOption
     case 'Enum':
       return EnumOption
-    default:
+    default: {
+      if (child.Children) {
+        return GroupOption
+      }
       return UnknownOption
-  }
-}
-
-function extractValue(reset: boolean) {
-  const value: { [key: string]: any } = {}
-  if ('Children' in props.config) {
-    for (const child of props.config.Children) {
-      value[child.Option] = reset ? child.DefaultValue : child.Value
     }
   }
-  return value
 }
-
-const form = ref<{ [key: string]: any }>({})
-
-watchEffect(() => {
-  form.value = extractValue(false)
-})
-
-function reset() {
-  form.value = extractValue(true)
-}
-
-function get() {
-  return form.value
-}
-
-defineExpose({
-  reset,
-  get,
-})
 </script>
 
 <template>
@@ -64,7 +42,6 @@ defineExpose({
   </NAlert>
   <NForm
     v-else
-    :model="form"
     :label-placement="labelPlacement"
     label-width="200px"
   >
@@ -74,10 +51,10 @@ defineExpose({
       :label="child.Description"
     >
       <component
-        :is="toComponent(child.Type)"
+        :is="toComponent(child)"
         :config="child"
-        :value="form[child.Option]"
-        :on-update="(v) => { form[child.Option] = v }"
+        :value="value[child.Option]"
+        @update="v => onUpdate({ ...value, [child.Option]: v })"
       />
     </NFormItem>
   </NForm>
