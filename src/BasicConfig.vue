@@ -5,6 +5,7 @@ import type { Config } from 'fcitx5-js'
 import IntegerOption from './option/IntegerOption.vue'
 import BooleanOption from './option/BooleanOption.vue'
 import EnumOption from './option/EnumOption.vue'
+import KeyOption from './option/KeyOption.vue'
 import GroupOption from './option/GroupOption.vue'
 import UnknownOption from './option/UnknownOption.vue'
 import { isMobile } from './util'
@@ -26,6 +27,8 @@ function toComponent(child: { Type: string, Children: any[] | null }) {
       return BooleanOption
     case 'Enum':
       return EnumOption
+    case 'Key':
+      return KeyOption
     default: {
       if (child.Children) {
         return GroupOption
