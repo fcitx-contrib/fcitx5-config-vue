@@ -3,16 +3,7 @@ import { computed } from 'vue'
 import { NAlert, NDialogProvider, NForm, NFormItem } from 'naive-ui'
 import type { Config } from 'fcitx5-js'
 import TooltipButton from './TooltipButton.vue'
-import IntegerOption from './option/IntegerOption.vue'
-import BooleanOption from './option/BooleanOption.vue'
-import EnumOption from './option/EnumOption.vue'
-import KeyOption from './option/KeyOption.vue'
-import StringOption from './option/StringOption.vue'
-import ExternalOption from './option/ExternalOption.vue'
-import ListOption from './option/ListOption.vue'
-import GroupOption from './option/GroupOption.vue'
-import UnknownOption from './option/UnknownOption.vue'
-import { isMobile } from './util'
+import { isMobile, toComponent } from './util'
 
 defineProps<{
   path: string
@@ -22,32 +13,6 @@ defineProps<{
 }>()
 
 const labelPlacement = computed(() => isMobile.value ? 'top' : 'left')
-
-function toComponent(child: { Type: string, Children: any[] | null }) {
-  switch (child.Type) {
-    case 'Integer':
-      return IntegerOption
-    case 'Boolean':
-      return BooleanOption
-    case 'Enum':
-      return EnumOption
-    case 'Key':
-      return KeyOption
-    case 'String':
-      return StringOption
-    case 'External':
-      return ExternalOption
-    default: {
-      if (child.Type.startsWith('List|')) {
-        return ListOption
-      }
-      if (child.Children) {
-        return GroupOption
-      }
-      return UnknownOption
-    }
-  }
-}
 </script>
 
 <template>

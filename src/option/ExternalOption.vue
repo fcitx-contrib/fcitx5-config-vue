@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { h, ref } from 'vue'
-import { useDialog } from 'naive-ui'
+import { NScrollbar, useDialog } from 'naive-ui'
 import GearButton from '../GearButton.vue'
 import BasicConfig from '../BasicConfig.vue'
 import FooterButtons from '../FooterButtons.vue'
@@ -26,14 +26,18 @@ function click() {
         form.value = extractValue(config, false)
         const instance = dialog.info({
           title: props.config.Description,
-          content: () => h(BasicConfig, {
+          content: () => h(NScrollbar, {
+            style: {
+              'max-height': 'calc(100vh - 200px)',
+            },
+          }, () => h(BasicConfig, {
             path: props.config.Option,
             config,
             value: form.value,
             onUpdate(v) {
               form.value = v
             },
-          }),
+          })),
           action: () => h(FooterButtons, {
             reset() {
               form.value = extractValue(config, true)
@@ -45,6 +49,12 @@ function click() {
               window.fcitx.setConfig(props.config.External, form.value)
             },
           }),
+          actionStyle: {
+            display: 'block', // separate 4 buttons
+          },
+          style: {
+            width: 'auto', // KeyOption overflows on Desktop
+          },
         })
       }
       else {

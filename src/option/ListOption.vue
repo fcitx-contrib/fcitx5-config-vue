@@ -3,9 +3,7 @@ import { NButtonGroup, NList, NListItem } from 'naive-ui'
 import UpButton from '../UpButton.vue'
 import MinusButton from '../MinusButton.vue'
 import PlusButton from '../PlusButton.vue'
-import KeyOption from './KeyOption.vue'
-import StringOption from './StringOption.vue'
-import UnknownOption from './UnknownOption.vue'
+import { toComponent } from '../util'
 
 const props = defineProps<{
   config: {
@@ -14,17 +12,6 @@ const props = defineProps<{
   value: { [key: string]: string }
   onUpdate: (value: { [key: string]: string }) => void
 }>()
-
-function toComponent(type: string) {
-  switch (type) {
-    case 'List|Key':
-      return KeyOption
-    case 'List|String':
-      return StringOption
-    default:
-      return UnknownOption
-  }
-}
 
 function move(index: number) {
   props.onUpdate({ ...props.value, [index - 1]: props.value[index], [index]: props.value[index - 1] })
@@ -63,7 +50,8 @@ function add(index: number) {
       :key="i"
     >
       <component
-        :is="toComponent(config.Type)"
+        :is="toComponent({ Type: config.Type.slice('List|'.length) })"
+        :config="config"
         :value="item"
         @update="v => onUpdate({ ...value, [i]: v })"
       />
