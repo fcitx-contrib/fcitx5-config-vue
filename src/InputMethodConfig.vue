@@ -1,11 +1,12 @@
 <script lang="ts">
 import { computed, h, ref, watchEffect } from 'vue'
 import type { MenuOption } from 'naive-ui'
-import type { Config } from 'fcitx5-js'
 import { NButton, NCheckbox, NCheckboxGroup, NFlex, NLayout, NLayoutFooter, NLayoutSider, NMenu } from 'naive-ui'
 import MinusButton from './MinusButton.vue'
 import PlusButton from './PlusButton.vue'
 import BasicConfig from './BasicConfig.vue'
+import FooterButtons from './FooterButtons.vue'
+import { extractValue } from './util'
 
 const languageName = new Intl.DisplayNames(navigator.language, { type: 'language' })
 </script>
@@ -137,20 +138,6 @@ const filteredLanguageOptions = computed(() => {
 
 const form = ref({})
 
-function extractValue(config: Config, reset: boolean) {
-  const value: { [key: string]: any } = {}
-  if ('Children' in config) {
-    for (const child of config.Children) {
-      value[child.Option] = reset
-        ? (
-            'DefaultValue' in child ? child.DefaultValue : extractValue(child, true)
-          )
-        : child.Value
-    }
-  }
-  return value
-}
-
 watchEffect(() => {
   form.value = extractValue(config.value, false)
 })
@@ -161,11 +148,6 @@ function reset() {
 
 function apply() {
   window.fcitx.setConfig(uri.value, form.value)
-}
-
-function confirm() {
-  apply()
-  props.onClose()
 }
 </script>
 
@@ -265,39 +247,11 @@ function confirm() {
           />
         </NLayout>
         <NLayoutFooter position="absolute">
-          <NFlex
-            style="padding: 8px; justify-content: space-between"
-          >
-            <NFlex>
-              <NButton
-                secondary
-                @click="reset()"
-              >
-                Reset to default
-              </NButton>
-              <NButton
-                secondary
-                @click="onClose()"
-              >
-                Cancel
-              </NButton>
-            </NFlex>
-            <NFlex>
-              <NButton
-                secondary
-                @click="apply()"
-              >
-                Apply
-              </NButton>
-              <NButton
-                secondary
-                type="info"
-                @click="confirm()"
-              >
-                OK
-              </NButton>
-            </NFlex>
-          </NFlex>
+          <FooterButtons
+            :reset="reset"
+            :apply="apply"
+            :close="onClose"
+          />
         </NLayoutFooter>
       </template>
     </NLayout>

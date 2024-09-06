@@ -5,14 +5,14 @@ import { NSelect } from 'naive-ui'
 const props = defineProps<{
   config: {
     Enum: { [key: string]: string }
-    EnumI18n: { [key: string]: string }
+    EnumI18n?: { [key: string]: string }
   }
   value: string
   onUpdate: (value: string) => void
 }>()
 
 const options = computed(() => Object.entries(props.config.Enum).map(([key, value]) => ({
-  label: props.config.EnumI18n[key],
+  label: (props.config.EnumI18n || props.config.Enum)[key],
   value,
 })))
 </script>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { NAlert, NForm, NFormItem } from 'naive-ui'
+import { NAlert, NDialogProvider, NForm, NFormItem } from 'naive-ui'
 import type { Config } from 'fcitx5-js'
 import TooltipButton from './TooltipButton.vue'
 import IntegerOption from './option/IntegerOption.vue'
@@ -8,6 +8,7 @@ import BooleanOption from './option/BooleanOption.vue'
 import EnumOption from './option/EnumOption.vue'
 import KeyOption from './option/KeyOption.vue'
 import StringOption from './option/StringOption.vue'
+import ExternalOption from './option/ExternalOption.vue'
 import ListOption from './option/ListOption.vue'
 import GroupOption from './option/GroupOption.vue'
 import UnknownOption from './option/UnknownOption.vue'
@@ -34,6 +35,8 @@ function toComponent(child: { Type: string, Children: any[] | null }) {
       return KeyOption
     case 'String':
       return StringOption
+    case 'External':
+      return ExternalOption
     default: {
       if (child.Type.startsWith('List|')) {
         return ListOption
@@ -67,12 +70,14 @@ function toComponent(child: { Type: string, Children: any[] | null }) {
           :text="child.Tooltip"
         />
       </template>
-      <component
-        :is="toComponent(child)"
-        :config="child"
-        :value="value[child.Option]"
-        @update="v => onUpdate({ ...value, [child.Option]: v })"
-      />
+      <NDialogProvider>
+        <component
+          :is="toComponent(child)"
+          :config="child"
+          :value="value[child.Option]"
+          @update="v => onUpdate({ ...value, [child.Option]: v })"
+        />
+      </NDialogProvider>
     </NFormItem>
   </NForm>
 </template>
