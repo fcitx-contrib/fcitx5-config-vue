@@ -202,7 +202,7 @@ function apply() {
         </NLayoutFooter>
       </NLayout>
     </NLayoutSider>
-    <NLayout style="min-height: 480px; max-height: calc(100vh - 100px)">
+    <NLayout style="height: calc(100vh - 100px)">
       <template v-if="adding">
         <div
           v-if="selectedLanguage === null"
