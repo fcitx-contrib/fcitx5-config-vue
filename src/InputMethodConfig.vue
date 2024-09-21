@@ -162,38 +162,45 @@ function apply() {
       @collapse="collapsed = true"
       @expand="collapsed = false"
     >
-      <NLayout v-if="adding" style="height: 100%">
-        <NLayout position="absolute" style="bottom: 50px">
+      <NLayout style="height: 100%">
+        <NLayout
+          position="absolute"
+          :native-scrollbar="false"
+          style="bottom: 50px"
+        >
           <NMenu
+            v-if="adding"
             v-model:value="selectedLanguage"
             :options="filteredLanguageOptions"
+          />
+          <NMenu
+            v-else
+            v-model:value="selectedInputMethod"
+            :collapsed="collapsed"
+            :collapsed-width="0"
+            :options="options"
+            :render-label="labelWithMinus"
           />
         </NLayout>
         <NLayoutFooter position="absolute">
           <NCheckbox
+            v-if="adding"
             v-model:checked="onlyShowCurrentLanguage"
             style="height: 50px; display: flex; justify-content: center; align-items: center"
           >
-            Only show current language
+            {{ collapsed ? '' : 'Only show current language' }}
           </NCheckbox>
+          <div
+            v-else
+            style="display: flex; justify-content: end"
+          >
+            <PlusButton
+              style="align-self: flex-end"
+              @click="adding = true"
+            />
+          </div>
         </NLayoutFooter>
       </NLayout>
-      <div
-        v-else
-        style="display: flex; flex-direction: column; justify-content: space-between; height: 100%"
-      >
-        <NMenu
-          v-model:value="selectedInputMethod"
-          :collapsed="collapsed"
-          :collapsed-width="0"
-          :options="options"
-          :render-label="labelWithMinus"
-        />
-        <PlusButton
-          style="align-self: flex-end"
-          @click="adding = true"
-        />
-      </div>
     </NLayoutSider>
     <NLayout style="min-height: 480px; max-height: calc(100vh - 100px)">
       <template v-if="adding">
@@ -203,7 +210,12 @@ function apply() {
         >
           Select a language from the left list
         </div>
-        <NLayout v-else position="absolute" style="bottom: 50px">
+        <NLayout
+          v-else
+          position="absolute"
+          :native-scrollbar="false"
+          style="bottom: 50px"
+        >
           <NCheckboxGroup
             v-model:value="imsToAdd"
             style="margin: 16px"
@@ -237,7 +249,11 @@ function apply() {
         </NLayoutFooter>
       </template>
       <template v-else>
-        <NLayout position="absolute" style="bottom: 50px">
+        <NLayout
+          position="absolute"
+          :native-scrollbar="false"
+          style="bottom: 50px"
+        >
           <BasicConfig
             :path="selectedInputMethod"
             :config="config"
