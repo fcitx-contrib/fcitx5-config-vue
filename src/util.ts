@@ -5,6 +5,7 @@ import IntegerOption from './option/IntegerOption.vue'
 import BooleanOption from './option/BooleanOption.vue'
 import EnumOption from './option/EnumOption.vue'
 import KeyOption from './option/KeyOption.vue'
+import ColorOption from './option/ColorOption.vue'
 import StringOption from './option/StringOption.vue'
 import ExternalOption from './option/ExternalOption.vue'
 import ListOption from './option/ListOption.vue'
@@ -39,6 +40,8 @@ export function toComponent(child: { Type: string, Children?: any[] | null } & {
       return EnumOption
     case 'Key':
       return KeyOption
+    case 'Color':
+      return ColorOption
     case 'String':
       if (child.IsEnum === 'True') {
         return EnumOption
