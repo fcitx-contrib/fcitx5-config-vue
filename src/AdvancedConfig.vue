@@ -1,40 +1,44 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref, watchEffect } from 'vue'
 import { NLayout, NLayoutFooter, NLayoutSider, NMenu } from 'naive-ui'
-import type { Config } from 'fcitx5-js'
 import BasicConfig from './BasicConfig.vue'
 import FooterButtons from './FooterButtons.vue'
 import { extractValue } from './util'
 
-const props = defineProps<{
-  uri: string
+defineProps<{
   onClose: () => void
 }>()
 
-const index = ref(0)
-const config = {
-  Children: [],
-  ...window.fcitx.getConfig(props.uri),
-}
-const options = config.Children.map((child, i) => ({
-  key: i,
-  label: child.Description,
+const options = window.fcitx.getAddons().map(category => ({
+  type: 'group',
+  key: category.id,
+  label: category.name,
+  children: category.addons.map(addon => ({
+    key: addon.id,
+    label: addon.name,
+  })),
 }))
+
+const addon = ref(options[0].children[0].key)
+
+const uri = computed(() => `fcitx://config/addon/${addon.value}`)
+
+const config = computed(() => window.fcitx.getConfig(uri.value))
 
 const collapsed = ref(false)
 
-function childToConfig(child: typeof config.Children[0]): Config {
-  return { Children: child.Children || [] }
-}
+const form = ref({})
 
-const form = ref(extractValue(config, false))
+watchEffect(() => {
+  form.value = extractValue(config.value, false)
+})
 
 function reset() {
-  form.value[config.Children[index.value].Option] = extractValue(childToConfig(config.Children[index.value]), true)
+  form.value = extractValue(config.value, true)
 }
 
 function apply() {
-  window.fcitx.setConfig(props.uri, form.value)
+  window.fcitx.setConfig(uri.value, form.value)
 }
 </script>
 
@@ -51,7 +55,7 @@ function apply() {
       @expand="collapsed = false"
     >
       <NMenu
-        v-model:value="index"
+        v-model:value="addon"
         :options="options"
       />
     </NLayoutSider>
@@ -62,11 +66,11 @@ function apply() {
         style="bottom: 50px"
       >
         <BasicConfig
-          :path="config.Children[index].Option"
-          :config="childToConfig(config.Children[index])"
-          :value="form[config.Children[index].Option]"
+          :path="addon"
+          :config="config"
+          :value="form"
           style="margin: 16px"
-          @update="v => form[config.Children[index].Option] = v"
+          @update="v => form = v"
         />
       </NLayout>
       <NLayoutFooter position="absolute">
