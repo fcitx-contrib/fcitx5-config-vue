@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { h, ref } from 'vue'
 import { NScrollbar, useDialog } from 'naive-ui'
-import GearButton from '../GearButton.vue'
+import { h, ref } from 'vue'
 import BasicConfig from '../BasicConfig.vue'
 import FooterButtons from '../FooterButtons.vue'
+import GearButton from '../GearButton.vue'
 import { extractValue } from '../util'
 
 const props = defineProps<{

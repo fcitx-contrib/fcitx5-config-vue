@@ -1,11 +1,11 @@
 <script lang="ts">
-import { computed, h, ref, watchEffect } from 'vue'
 import type { MenuOption } from 'naive-ui'
 import { NButton, NCheckbox, NCheckboxGroup, NFlex, NLayout, NLayoutFooter, NLayoutSider, NMenu } from 'naive-ui'
-import MinusButton from './MinusButton.vue'
-import PlusButton from './PlusButton.vue'
+import { computed, h, ref, watchEffect } from 'vue'
 import BasicConfig from './BasicConfig.vue'
 import FooterButtons from './FooterButtons.vue'
+import MinusButton from './MinusButton.vue'
+import PlusButton from './PlusButton.vue'
 import { extractValue } from './util'
 
 const languageName = new Intl.DisplayNames(navigator.language, { type: 'language' })

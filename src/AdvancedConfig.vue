@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed, ref, watchEffect } from 'vue'
 import { NLayout, NLayoutFooter, NLayoutSider, NMenu } from 'naive-ui'
+import { computed, ref, watchEffect } from 'vue'
 import BasicConfig from './BasicConfig.vue'
 import FooterButtons from './FooterButtons.vue'
 import { extractValue } from './util'

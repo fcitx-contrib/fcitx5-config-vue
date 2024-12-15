@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { NButtonGroup, NList, NListItem } from 'naive-ui'
-import UpButton from '../UpButton.vue'
 import MinusButton from '../MinusButton.vue'
 import PlusButton from '../PlusButton.vue'
+import UpButton from '../UpButton.vue'
 import { toComponent } from '../util'
 
 const props = defineProps<{

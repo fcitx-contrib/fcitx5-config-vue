@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
 import { NButton } from 'naive-ui'
+import { computed, ref } from 'vue'
 
 const props = defineProps<{
   value: string

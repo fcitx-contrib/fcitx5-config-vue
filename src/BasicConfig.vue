@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import { NAlert, NDialogProvider, NForm, NFormItem } from 'naive-ui'
 import type { Config } from 'fcitx5-js'
+import { NAlert, NDialogProvider, NForm, NFormItem } from 'naive-ui'
+import { computed } from 'vue'
 import TooltipButton from './TooltipButton.vue'
 import { isMobile, toComponent } from './util'
 

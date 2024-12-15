@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { NLayout, NLayoutFooter, NLayoutSider, NMenu } from 'naive-ui'
 import type { Config } from 'fcitx5-js'
+import { NLayout, NLayoutFooter, NLayoutSider, NMenu } from 'naive-ui'
+import { ref } from 'vue'
 import BasicConfig from './BasicConfig.vue'
 import FooterButtons from './FooterButtons.vue'
 import { extractValue } from './util'
