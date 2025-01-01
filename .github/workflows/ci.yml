@@ -32,6 +32,7 @@ jobs:
         run: |
           pnpm run build
           npm pack
+          mv fcitx5-config-vue-*.tgz fcitx5-config-vue.tgz
 
       - name: Release
         if: ${{ github.ref == 'refs/heads/master' }}
@@ -42,4 +43,4 @@ jobs:
           prerelease: true
           title: Nightly Build
           files: |
-            fcitx5-config-vue-*.tgz
+            fcitx5-config-vue.tgz
