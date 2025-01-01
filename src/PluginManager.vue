@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { UploadFileInfo } from 'naive-ui'
-import { NA, NFlex, NList, NListItem, NUpload, NUploadDragger, useMessage } from 'naive-ui'
+import { NA, NAlert, NCode, NFlex, NList, NListItem, NUpload, NUploadDragger, useMessage } from 'naive-ui'
 import { computed, ref } from 'vue'
 
 const message = useMessage()
@@ -9,7 +9,7 @@ function getInstalledPlugins() {
   return window.fcitx.getInstalledPlugins().sort()
 }
 
-const allPlugins = ['anthy', 'chewing', 'chinese-addons', 'hallelujah', 'hangul', 'lua', 'rime', 'sayura', 'thai', 'unikey']
+const allPlugins = ['anthy', 'chewing', 'chinese-addons', 'hallelujah', 'hangul', 'lua', 'mozc', 'rime', 'sayura', 'thai', 'unikey']
 const installedPlugins = ref<string[]>(getInstalledPlugins())
 const availablePlugins = computed(() => allPlugins.filter(plugin => !installedPlugins.value.includes(plugin)))
 
@@ -37,11 +37,17 @@ async function onUpload(files: UploadFileInfo[]) {
 
 <template>
   <NFlex size="large">
-    <NUpload v-model:file-list="fileList" style="width: auto" multiple accept=".zip" @update:file-list="onUpload">
-      <NUploadDragger style="height: 200px">
-        Download and drag zip to this area
-      </NUploadDragger>
-    </NUpload>
+    <NFlex vertical>
+      <NUpload v-model:file-list="fileList" style="width: auto" multiple accept=".zip" @update:file-list="onUpload">
+        <NUploadDragger style="height: 200px">
+          Download and drag zip to this area
+        </NUploadDragger>
+      </NUpload>
+      <NAlert title="Warning" type="warning">
+        Mozc doesn't work on Chrome unless start the process with <br>
+        <NCode>--enable-features=WebAssemblyUnlimitedSyncCompilation</NCode>
+      </NAlert>
+    </NFlex>
     <NFlex>
       <NList style="min-width: 100px">
         <template #header>
