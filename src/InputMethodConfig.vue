@@ -4,6 +4,7 @@ import { NButton, NCheckbox, NCheckboxGroup, NFlex, NLayout, NLayoutFooter, NLay
 import { computed, h, ref, watchEffect } from 'vue'
 import BasicConfig from './BasicConfig.vue'
 import FooterButtons from './FooterButtons.vue'
+import { t } from './i18n'
 import MinusButton from './MinusButton.vue'
 import PlusButton from './PlusButton.vue'
 import { extractValue } from './util'
@@ -188,7 +189,7 @@ function apply() {
             v-model:checked="onlyShowCurrentLanguage"
             style="height: 50px; display: flex; justify-content: center; align-items: center"
           >
-            {{ collapsed ? '' : 'Only show current language' }}
+            {{ collapsed ? '' : t('Only show current language') }}
           </NCheckbox>
           <div
             v-else
@@ -208,7 +209,7 @@ function apply() {
           v-if="selectedLanguage === null"
           style="display: flex; justify-content: center; align-items: center; height: calc(100% - 50px);"
         >
-          Select a language from the left list
+          {{ t('Select a language from the left list') }}
         </div>
         <NLayout
           v-else
@@ -235,7 +236,7 @@ function apply() {
             style="padding: 8px; justify-content: space-between"
           >
             <NButton secondary @click="adding = false">
-              Cancel
+              {{ t('Cancel') }}
             </NButton>
             <NButton
               secondary
@@ -243,7 +244,7 @@ function apply() {
               :disabled="imsToAdd.length === 0"
               @click="add"
             >
-              Add
+              {{ t('Add') }}
             </NButton>
           </NFlex>
         </NLayoutFooter>

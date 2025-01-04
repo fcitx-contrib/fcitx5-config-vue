@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { NButton, NFlex } from 'naive-ui'
+import { t } from './i18n'
 
 defineProps<{
   reset: () => void
@@ -17,13 +18,13 @@ defineProps<{
         secondary
         @click="reset"
       >
-        Reset to default
+        {{ t('Reset to default') }}
       </NButton>
       <NButton
         secondary
         @click="close"
       >
-        Cancel
+        {{ t('Cancel') }}
       </NButton>
     </NFlex>
     <NFlex>

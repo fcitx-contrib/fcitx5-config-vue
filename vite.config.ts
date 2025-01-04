@@ -14,6 +14,7 @@ export default defineConfig({
         'vue',
         'naive-ui',
         'vooks',
+        'vue-i18n',
       ],
     },
   },
