@@ -6,7 +6,7 @@ const messages = {
   'zh-CN': zhCN,
 }
 
-function getLocale() {
+export function getLocale(messages: { [key: string]: any }) {
   for (const language of navigator.languages) {
     if (language in messages) {
       return language
@@ -21,7 +21,7 @@ function getLocale() {
 }
 
 const i18n = createI18n({
-  locale: getLocale(),
+  locale: getLocale(messages),
   messages,
 })
 
