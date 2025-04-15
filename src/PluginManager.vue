@@ -29,7 +29,7 @@ async function onUpload(files: UploadFileInfo[]) {
       message.error(e.message)
       continue
     }
-    window.fcitx.updateStatusArea()
+    window.fcitx.updateInputMethods()
     installedPlugins.value = getInstalledPlugins()
     message.success(`Installed ${name}`)
   }
