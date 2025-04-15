@@ -48,7 +48,7 @@ function labelWithMinus(option: MenuOption) {
       onClick: (e: MouseEvent) => {
         const ims = props.inputMethods.filter(({ name }) => name !== option.key).map(({ name }) => name)
         window.fcitx.setInputMethods(ims)
-        window.fcitx.updateStatusArea()
+        window.fcitx.updateInputMethods()
         e.stopPropagation() // Don't fallback to selecting menu item.
         if (selectedInputMethod.value === option.key) {
           selectedInputMethod.value = ims[0]
@@ -123,7 +123,7 @@ const imsToAdd = ref<string[]>([])
 
 function add() {
   window.fcitx.setInputMethods(props.inputMethods.map(({ name }) => name).concat(imsToAdd.value))
-  window.fcitx.updateStatusArea()
+  window.fcitx.updateInputMethods()
   imsToAdd.value = []
 }
 
