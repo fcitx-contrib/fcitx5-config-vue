@@ -10,6 +10,15 @@ import PlusButton from './PlusButton.vue'
 import { extractValue } from './util'
 
 const languageName = new Intl.DisplayNames(navigator.language, { type: 'language' })
+
+function getNameOf(code: string) {
+  try {
+    return languageName.of(code) ?? code
+  }
+  catch { // e.g. code === '*' (m17n math-latex)
+    return code
+  }
+}
 </script>
 
 <script setup lang="ts">
@@ -93,8 +102,8 @@ watchEffect(() => {
     if (!b) {
       return -1
     }
-    const la = languageName.of(a) ?? a
-    const lb = languageName.of(b) ?? b
+    const la = getNameOf(a)
+    const lb = getNameOf(b)
     if (a === la && b !== lb) {
       return 1
     }
@@ -105,7 +114,7 @@ watchEffect(() => {
   })
   for (const languageCode of sortedLanguageCodes) {
     languageOptions.value.push({
-      label: languageCode ? (languageName.of(languageCode) ?? languageCode) : 'Unknown',
+      label: languageCode ? getNameOf(languageCode) : 'Unknown',
       key: languageCode,
     })
   }
