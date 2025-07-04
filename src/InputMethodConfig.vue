@@ -31,6 +31,8 @@ const props = defineProps<{
   onClose: () => void
 }>()
 
+const enabledIMs = computed(() => props.inputMethods.map(({ name }) => name))
+
 const selectedInputMethod = ref(props.inputMethod)
 const uri = computed(() => `fcitx://config/inputmethod/${selectedInputMethod.value}`)
 
@@ -81,18 +83,21 @@ let map: { [key: string]: {
   name: string
   displayName: string
 }[] } = {}
+let languageOfIM: { [key: string]: string } = {}
 
 watchEffect(() => {
   if (!adding.value) {
     return
   }
   map = {}
+  languageOfIM = {}
   for (const im of window.fcitx.getAllInputMethods()) {
     const code = im.languageCode.replace('_', '-');
     (map[code] = map[code] || []).push({
       name: im.name,
       displayName: im.displayName,
     })
+    languageOfIM[im.name] = code
   }
   languageOptions.value = []
   const sortedLanguageCodes = Object.keys(map).sort((a: string, b: string) => {
@@ -124,8 +129,7 @@ const inputMethodsForLanguage = computed(() => {
   if (selectedLanguage.value === null) {
     return []
   }
-  const enabledIMs = props.inputMethods.map(({ name }) => name)
-  return map[selectedLanguage.value].filter(({ name }) => !enabledIMs.includes(name))
+  return map[selectedLanguage.value].filter(({ name }) => !enabledIMs.value.includes(name))
 })
 
 const imsToAdd = ref<string[]>([])
@@ -141,7 +145,9 @@ const onlyShowCurrentLanguage = ref(false)
 const filteredLanguageOptions = computed(() => {
   if (onlyShowCurrentLanguage.value) {
     const currentLanguage = navigator.language.split('-')[0]
-    return languageOptions.value.filter(({ key }) => key.split('-')[0] === currentLanguage)
+    const languages = new Set(enabledIMs.value.map(name => languageOfIM[name]).filter(code => code))
+    languages.add(currentLanguage)
+    return languageOptions.value.filter(({ key }) => languages.has(key.split('-')[0]))
   }
   return languageOptions.value
 })
