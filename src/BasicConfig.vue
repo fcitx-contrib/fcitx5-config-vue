@@ -40,7 +40,7 @@ const labelPlacement = computed(() => isMobile.value ? 'top' : 'left')
           :is="toComponent(child)"
           :config="child"
           :value="value[child.Option]"
-          @update="v => onUpdate({ ...value, [child.Option]: v })"
+          @update="(v: any) => onUpdate({ ...value, [child.Option]: v })"
         />
       </NDialogProvider>
     </NFormItem>

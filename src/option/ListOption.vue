@@ -53,7 +53,7 @@ function add(index: number) {
         :is="toComponent({ Type: config.Type.slice('List|'.length) })"
         :config="config"
         :value="item"
-        @update="v => onUpdate({ ...value, [i]: v })"
+        @update="(v: any) => onUpdate({ ...value, [i]: v })"
       />
       <template #suffix>
         <NButtonGroup>

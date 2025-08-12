@@ -25,7 +25,7 @@ defineProps<{
       :config="child"
       :value="value[child.Option]"
       style="max-width: 200px"
-      @update="v => { console.log(v); onUpdate({ ...value, [child.Option]: v }) }"
+      @update="(v: any) => { onUpdate({ ...value, [child.Option]: v }) }"
     />
   </NFlex>
 </template>
