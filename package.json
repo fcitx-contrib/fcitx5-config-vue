@@ -11,16 +11,16 @@
     "build": "vite build && vue-tsc -d --emitDeclarationOnly"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^4.13.0",
-    "@vitejs/plugin-vue": "^5.2.4",
-    "eslint": "^9.26.0",
+    "@antfu/eslint-config": "^5.2.1",
+    "@vitejs/plugin-vue": "^6.0.1",
+    "eslint": "^9.33.0",
     "fcitx5-js": "file:cache/fcitx5-js.tgz",
-    "naive-ui": "^2.41.0",
-    "typescript": "5.8.3",
-    "vite": "^6.3.5",
+    "naive-ui": "^2.42.0",
+    "typescript": "5.9.2",
+    "vite": "^7.1.2",
     "vooks": "^0.2.12",
-    "vue": "^3.5.13",
+    "vue": "^3.5.18",
     "vue-i18n": "11",
-    "vue-tsc": "^2.2.10"
+    "vue-tsc": "^3.0.5"
   }
 }
