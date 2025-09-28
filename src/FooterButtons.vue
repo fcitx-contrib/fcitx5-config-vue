@@ -1,11 +1,14 @@
 <script setup lang="ts">
+import type { ConfigManager } from './manager'
 import { NButton, NFlex } from 'naive-ui'
 import { t } from './i18n'
 
 defineProps<{
-  reset: () => void
-  close: () => void
-  apply: () => void
+  manager: ConfigManager
+}>()
+
+defineEmits<{
+  close: []
 }>()
 </script>
 
@@ -16,30 +19,31 @@ defineProps<{
     <NFlex>
       <NButton
         secondary
-        @click="reset"
+        :disabled="manager.undoStack.value.length === 0"
+        @click="manager.undo()"
       >
-        {{ t('Reset to default') }}
+        {{ t('Undo') }}
       </NButton>
       <NButton
         secondary
-        @click="close"
+        :disabled="manager.redoStack.value.length === 0"
+        @click="manager.redo()"
       >
-        {{ t('Cancel') }}
+        {{ t('Redo') }}
+      </NButton>
+      <NButton
+        secondary
+        @click="manager.reset()"
+      >
+        {{ t('Reset to default') }}
       </NButton>
     </NFlex>
     <NFlex>
       <NButton
         secondary
-        @click="apply"
+        @click="$emit('close')"
       >
-        Apply
-      </NButton>
-      <NButton
-        secondary
-        type="info"
-        @click="apply(); close()"
-      >
-        OK
+        {{ t('Close') }}
       </NButton>
     </NFlex>
   </NFlex>

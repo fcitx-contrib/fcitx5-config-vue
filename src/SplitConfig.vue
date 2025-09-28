@@ -1,41 +1,24 @@
 <script setup lang="ts">
-import type { Config } from 'fcitx5-js'
 import { NLayout, NLayoutFooter, NLayoutSider, NMenu } from 'naive-ui'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import BasicConfig from './BasicConfig.vue'
 import FooterButtons from './FooterButtons.vue'
-import { extractValue } from './util'
+import { ConfigManager } from './manager'
 
 const props = defineProps<{
   uri: string
   onClose: () => void
 }>()
 
-const index = ref(0)
-const config = {
-  Children: [],
-  ...window.fcitx.getConfig(props.uri),
-}
-const options = config.Children.map((child, i) => ({
+const options = { Children: [], ...window.fcitx.getConfig(props.uri) }.Children.map((child, i) => ({
   key: i,
   label: child.Description,
 }))
 
+const index = ref(0)
+const manager = computed(() => new ConfigManager(props.uri, index.value))
+
 const collapsed = ref(false)
-
-function childToConfig(child: typeof config.Children[0]): Config {
-  return { Children: child.Children || [] }
-}
-
-const form = ref(extractValue(config, false))
-
-function reset() {
-  form.value[config.Children[index.value].Option] = extractValue(childToConfig(config.Children[index.value]), true)
-}
-
-function apply() {
-  window.fcitx.setConfig(props.uri, form.value)
-}
 </script>
 
 <template>
@@ -62,18 +45,17 @@ function apply() {
         style="bottom: 50px"
       >
         <BasicConfig
-          :path="config.Children[index].Option"
-          :config="childToConfig(config.Children[index])"
-          :value="form[config.Children[index].Option]"
+          :path="{ Option: '', ...manager.config }.Option"
+          :config="manager.config"
+          :value="manager.form.value"
           style="margin: 16px"
-          @update="v => form[config.Children[index].Option] = v"
+          @update="(v) => manager.set(v)"
         />
       </NLayout>
       <NLayoutFooter position="absolute">
         <FooterButtons
-          :reset="reset"
-          :apply="apply"
-          :close="onClose"
+          :manager="manager"
+          @close="onClose"
         />
       </NLayoutFooter>
     </NLayout>

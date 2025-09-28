@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { NScrollbar, useDialog } from 'naive-ui'
-import { h, ref } from 'vue'
+import { computed, h } from 'vue'
 import BasicConfig from '../BasicConfig.vue'
 import FooterButtons from '../FooterButtons.vue'
 import GearButton from '../GearButton.vue'
-import { extractValue } from '../util'
+import { ConfigManager } from '../manager'
 
 const props = defineProps<{
   config: {
@@ -16,14 +16,12 @@ const props = defineProps<{
 }>()
 
 const dialog = useDialog()
-const form = ref({})
+const manager = computed(() => new ConfigManager(props.config.External))
 
 function click() {
   switch (props.config.Option) {
     default:
       if (props.config.LaunchSubConfig === 'True') {
-        const config = window.fcitx.getConfig(props.config.External)
-        form.value = extractValue(config, false)
         const instance = dialog.info({
           title: props.config.Description,
           content: () => h(NScrollbar, {
@@ -32,21 +30,16 @@ function click() {
             },
           }, () => h(BasicConfig, {
             path: props.config.Option,
-            config,
-            value: form.value,
+            config: manager.value.config,
+            value: manager.value.form.value,
             onUpdate(v) {
-              form.value = v
+              manager.value.set(v)
             },
           })),
           action: () => h(FooterButtons, {
-            reset() {
-              form.value = extractValue(config, true)
-            },
-            close() {
+            manager: manager.value,
+            onClose() {
               instance.destroy()
-            },
-            apply() {
-              window.fcitx.setConfig(props.config.External, form.value)
             },
           }),
           actionStyle: {

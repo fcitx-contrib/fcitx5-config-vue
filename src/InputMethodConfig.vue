@@ -5,9 +5,9 @@ import { computed, h, ref, watchEffect } from 'vue'
 import BasicConfig from './BasicConfig.vue'
 import FooterButtons from './FooterButtons.vue'
 import { t } from './i18n'
+import { ConfigManager } from './manager'
 import MinusButton from './MinusButton.vue'
 import PlusButton from './PlusButton.vue'
-import { extractValue } from './util'
 
 const languageName = new Intl.DisplayNames(navigator.language, { type: 'language' })
 
@@ -34,9 +34,7 @@ const props = defineProps<{
 const enabledIMs = computed(() => props.inputMethods.map(({ name }) => name))
 
 const selectedInputMethod = ref(props.inputMethod)
-const uri = computed(() => `fcitx://config/inputmethod/${selectedInputMethod.value}`)
-
-const config = computed(() => window.fcitx.getConfig(uri.value))
+const manager = computed(() => new ConfigManager(`fcitx://config/inputmethod/${selectedInputMethod.value}`))
 
 const options = computed(() =>
   props.inputMethods.map(({ displayName, name }) => ({
@@ -151,20 +149,6 @@ const filteredLanguageOptions = computed(() => {
   }
   return languageOptions.value
 })
-
-const form = ref({})
-
-watchEffect(() => {
-  form.value = extractValue(config.value, false)
-})
-
-function reset() {
-  form.value = extractValue(config.value, true)
-}
-
-function apply() {
-  window.fcitx.setConfig(uri.value, form.value)
-}
 </script>
 
 <template>
@@ -272,17 +256,16 @@ function apply() {
         >
           <BasicConfig
             :path="selectedInputMethod"
-            :config="config"
-            :value="form"
+            :config="manager.config"
+            :value="manager.form.value"
             style="margin: 16px"
-            @update="v => form = v"
+            @update="(v) => manager.set(v)"
           />
         </NLayout>
         <NLayoutFooter position="absolute">
           <FooterButtons
-            :reset="reset"
-            :apply="apply"
-            :close="onClose"
+            :manager="manager"
+            @close="onClose"
           />
         </NLayoutFooter>
       </template>
