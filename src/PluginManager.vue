@@ -31,7 +31,7 @@ async function onUpload(files: UploadFileInfo[]) {
     }
     window.fcitx.updateInputMethods()
     installedPlugins.value = getInstalledPlugins()
-    message.success(`Installed ${name}`)
+    message.success(t('Installed {plugin}', { plugin: name }))
   }
 }
 </script>

@@ -5,6 +5,7 @@
   "Close": "关闭",
   "Download and drag zip to this area": "下载并拖拽 zip 到此区域",
   "Installed": "已安装",
+  "Installed {plugin}": "已安装 {plugin}",
   "Mozc doesn't work on Chrome unless start the process with": "Mozc 在 Chrome 下不工作，除非用如下参数启动进程",
   "Only show current language": "只显示当前语言",
   "Redo": "重做",

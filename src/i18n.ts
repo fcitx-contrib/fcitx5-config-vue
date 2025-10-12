@@ -25,6 +25,6 @@ const i18n = createI18n({
   messages,
 })
 
-export function t(key: string) {
-  return i18n.global.t(key)
+export function t(key: string, options: Record<string, unknown> = {}) {
+  return i18n.global.t(key, options)
 }
