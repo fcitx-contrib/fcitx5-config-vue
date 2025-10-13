@@ -1,6 +1,6 @@
 <script lang="ts">
 import type { MenuOption } from 'naive-ui'
-import { NButton, NCheckbox, NCheckboxGroup, NFlex, NLayout, NLayoutFooter, NLayoutSider, NMenu } from 'naive-ui'
+import { NButton, NCheckbox, NCheckboxGroup, NFlex, NLayout, NLayoutFooter, NLayoutSider, NMenu, NText } from 'naive-ui'
 import { computed, h, ref, watchEffect } from 'vue'
 import BasicConfig from './BasicConfig.vue'
 import FooterButtons from './FooterButtons.vue'
@@ -13,11 +13,17 @@ const languageName = new Intl.DisplayNames(navigator.language, { type: 'language
 
 function getNameOf(code: string) {
   try {
-    return languageName.of(code) ?? code
+    const name = languageName.of(code)
+    if (name && name !== code) {
+      return name
+    }
   }
-  catch { // e.g. code === '*' (m17n math-latex)
-    return code
+  catch {}
+  const name = window.fcitx.getLanguageName(code)
+  if (name) {
+    return name
   }
+  return `${t('Unknown')} - ${code}`
 }
 </script>
 
@@ -30,6 +36,9 @@ const props = defineProps<{
   }[]
   onClose: () => void
 }>()
+
+const EN = 'en'
+const popularIMs = ['keyboard-us', 'pinyin', 'shuangpin', 'wbx', 'rime', 'mozc', 'hallelujah']
 
 const enabledIMs = computed(() => props.inputMethods.map(({ name }) => name))
 
@@ -70,6 +79,7 @@ function labelWithMinus(option: MenuOption) {
 const collapsed = ref(false)
 const adding = ref(false)
 
+const currentLanguages = navigator.languages.map(lang => lang.split('-')[0])
 const selectedLanguage = ref<string | null>(null)
 
 const languageOptions = ref<{
@@ -90,7 +100,7 @@ watchEffect(() => {
   map = {}
   languageOfIM = {}
   for (const im of window.fcitx.getAllInputMethods()) {
-    const code = im.languageCode.replace('_', '-');
+    const code = im.languageCode.replace('_', '-') || 'und';
     (map[code] = map[code] || []).push({
       name: im.name,
       displayName: im.displayName,
@@ -99,25 +109,29 @@ watchEffect(() => {
   }
   languageOptions.value = []
   const sortedLanguageCodes = Object.keys(map).sort((a: string, b: string) => {
-    if (!a) {
+    // Pin English.
+    if (a === EN) {
+      return -1
+    }
+    if (b === EN) {
       return 1
     }
-    if (!b) {
+    // Pin browser languages.
+    const aIsCurrent = currentLanguages.includes(a.split('-')[0])
+    const bIsCurrent = currentLanguages.includes(b.split('-')[0])
+    if (aIsCurrent && !bIsCurrent) {
       return -1
+    }
+    if (!aIsCurrent && bIsCurrent) {
+      return 1
     }
     const la = getNameOf(a)
     const lb = getNameOf(b)
-    if (a === la && b !== lb) {
-      return 1
-    }
-    if (a !== la && b === lb) {
-      return -1
-    }
     return la.localeCompare(lb)
   })
   for (const languageCode of sortedLanguageCodes) {
     languageOptions.value.push({
-      label: languageCode ? getNameOf(languageCode) : 'Unknown',
+      label: getNameOf(languageCode),
       key: languageCode,
     })
   }
@@ -127,7 +141,21 @@ const inputMethodsForLanguage = computed(() => {
   if (selectedLanguage.value === null) {
     return []
   }
-  return map[selectedLanguage.value].filter(({ name }) => !enabledIMs.value.includes(name))
+  return map[selectedLanguage.value].filter(({ name }) => !enabledIMs.value.includes(name)).sort((a, b) => {
+    // Pin popular input methods.
+    const ia = popularIMs.indexOf(a.name)
+    const ib = popularIMs.indexOf(b.name)
+    if (ia >= 0 && ib < 0) {
+      return -1
+    }
+    if (ia < 0 && ib >= 0) {
+      return 1
+    }
+    if (ia >= 0 && ib >= 0) {
+      return ia - ib
+    }
+    return a.displayName.localeCompare(b.displayName)
+  })
 })
 
 const imsToAdd = ref<string[]>([])
@@ -142,9 +170,11 @@ const onlyShowCurrentLanguage = ref(false)
 
 const filteredLanguageOptions = computed(() => {
   if (onlyShowCurrentLanguage.value) {
-    const currentLanguage = navigator.language.split('-')[0]
     const languages = new Set(enabledIMs.value.map(name => languageOfIM[name]).filter(code => code))
-    languages.add(currentLanguage)
+    languages.add(EN)
+    for (const lang of currentLanguages) {
+      languages.add(lang)
+    }
     return languageOptions.value.filter(({ key }) => languages.has(key.split('-')[0]))
   }
   return languageOptions.value
@@ -225,8 +255,11 @@ const filteredLanguageOptions = computed(() => {
                 v-for="im of inputMethodsForLanguage"
                 :key="im.name"
                 :value="im.name"
-                :label="im.displayName"
-              />
+              >
+                <NText :strong="popularIMs.includes(im.name)">
+                  {{ im.displayName }}
+                </NText>
+              </NCheckbox>
             </NFlex>
           </NCheckboxGroup>
         </NLayout>
