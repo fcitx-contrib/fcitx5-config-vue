@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { UploadFileInfo } from 'naive-ui'
-import { NA, NAlert, NCode, NFlex, NList, NListItem, NUpload, NUploadDragger, useMessage } from 'naive-ui'
+import { NA, NFlex, NList, NListItem, NUpload, NUploadDragger, useMessage } from 'naive-ui'
 import { computed, ref } from 'vue'
 import { t } from './i18n'
 
@@ -38,17 +38,12 @@ async function onUpload(files: UploadFileInfo[]) {
 
 <template>
   <NFlex size="large">
-    <NFlex vertical>
-      <NUpload v-model:file-list="fileList" style="width: auto" multiple accept=".zip" @update:file-list="onUpload">
-        <NUploadDragger style="height: 200px">
-          {{ t('Download and drag zip to this area') }}
-        </NUploadDragger>
-      </NUpload>
-      <NAlert :title="t('Warning')" type="warning">
-        {{ t("Mozc doesn't work on Chrome unless start the process with") }} <br>
-        <NCode>--enable-features=WebAssemblyUnlimitedSyncCompilation</NCode>
-      </NAlert>
-    </NFlex>
+    <NUpload v-model:file-list="fileList" multiple accept=".zip" @update:file-list="onUpload">
+      <NUploadDragger style="height: 200px">
+        <p>{{ t('Download plugin zip by clicking links below') }}</p>
+        <p>{{ t('then click (or drag them to) this area') }}</p>
+      </NUploadDragger>
+    </NUpload>
     <NFlex>
       <NList style="min-width: 100px">
         <template #header>
