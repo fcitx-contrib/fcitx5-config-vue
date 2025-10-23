@@ -8,10 +8,13 @@
   "Installed": "已安装",
   "Installed {plugin}": "已安装 {plugin}",
   "Only show current language": "只显示当前语言",
+  "OK": "确定",
   "Redo": "重做",
+  "Reset": "重置",
   "Reset to default": "重设为默认值",
   "Select a language from the left list": "从左侧列表中选择一个语言",
   "Warning": "警告",
   "Undo": "撤销",
-  "Unknown": "未知"
+  "Unknown": "未知",
+  "Your user data and installed plugins will be removed.": "您的用户数据和已安装的插件将被删除。"
 }
