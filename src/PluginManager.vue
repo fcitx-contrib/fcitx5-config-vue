@@ -4,6 +4,10 @@ import { NA, NFlex, NList, NListItem, NUpload, NUploadDragger, useMessage } from
 import { computed, ref } from 'vue'
 import { t } from './i18n'
 
+defineProps<{
+  disabled: boolean
+}>()
+
 const message = useMessage()
 
 function getInstalledPlugins() {
@@ -38,7 +42,7 @@ async function onUpload(files: UploadFileInfo[]) {
 
 <template>
   <NFlex size="large">
-    <NUpload v-model:file-list="fileList" multiple accept=".zip" @update:file-list="onUpload">
+    <NUpload v-model:file-list="fileList" :disabled="disabled" multiple accept=".zip" @update:file-list="onUpload">
       <NUploadDragger style="height: 200px">
         <p>{{ t('Download plugin zip by clicking links below') }}</p>
         <p>{{ t('then click (or drag them to) this area') }}</p>
