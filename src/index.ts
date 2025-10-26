@@ -1,7 +1,7 @@
 export { default as AdvancedConfig } from './AdvancedConfig.vue'
 export { default as GearButton } from './GearButton.vue'
 export { default as GlobalConfig } from './GlobalConfig.vue'
-export { getLocale } from './i18n'
+export { getLocale, t } from './i18n'
 export { default as InputMethodConfig } from './InputMethodConfig.vue'
 export { default as PluginManager } from './PluginManager.vue'
 export { default as ResetButton } from './ResetButton.vue'
