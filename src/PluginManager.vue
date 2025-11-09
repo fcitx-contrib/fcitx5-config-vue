@@ -14,7 +14,7 @@ function getInstalledPlugins() {
   return window.fcitx.getInstalledPlugins().sort()
 }
 
-const allPlugins = ['anthy', 'chewing', 'chinese-addons', 'hallelujah', 'hangul', 'lua', 'm17n', 'mozc', 'rime', 'sayura', 'thai', 'unikey']
+const allPlugins = ['anthy', 'chewing', 'chinese-addons', 'hallelujah', 'hangul', 'lua', 'm17n', 'mozc', 'rime', 'sayura', 'skk', 'thai', 'unikey']
 const installedPlugins = ref<string[]>(getInstalledPlugins())
 const availablePlugins = computed(() => allPlugins.filter(plugin => !installedPlugins.value.includes(plugin)))
 
