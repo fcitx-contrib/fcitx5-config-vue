@@ -10,6 +10,7 @@
   "Input Method": "输入法",
   "Installed": "已安装",
   "Installed {plugin}": "已安装 {plugin}",
+  "Must install {plugin}": "必须安装 {plugin}",
   "Only show current language": "只显示当前语言",
   "OK": "确定",
   "Plugin Manager": "插件管理器",

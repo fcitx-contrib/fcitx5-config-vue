@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import type { UploadFileInfo } from 'naive-ui'
-import { NA, NFlex, NList, NListItem, NUpload, NUploadDragger, useMessage } from 'naive-ui'
+import { NA, NFlex, NList, NListItem, NText, NUpload, NUploadDragger, useMessage } from 'naive-ui'
 import { computed, ref } from 'vue'
 import { t } from './i18n'
+import MustInstall from './MustInstall.vue'
 
 defineProps<{
   disabled: boolean
@@ -14,7 +15,7 @@ function getInstalledPlugins() {
   return window.fcitx.getInstalledPlugins().sort()
 }
 
-const allPlugins = ['anthy', 'chewing', 'chinese-addons', 'hallelujah', 'hangul', 'lua', 'm17n', 'mozc', 'rime', 'sayura', 'skk', 'thai', 'unikey']
+const allPlugins = ['anthy', 'chewing', 'chinese-addons', 'hallelujah', 'hangul', 'jyutping', 'lua', 'm17n', 'mozc', 'rime', 'sayura', 'skk', 'thai', 'unikey']
 const installedPlugins = ref<string[]>(getInstalledPlugins())
 const availablePlugins = computed(() => allPlugins.filter(plugin => !installedPlugins.value.includes(plugin)))
 
@@ -54,7 +55,14 @@ async function onUpload(files: UploadFileInfo[]) {
           {{ t('Installed') }}
         </template>
         <NListItem v-for="plugin in installedPlugins" :key="plugin">
-          {{ plugin }}
+          <MustInstall v-if="plugin === 'jyutping' && !installedPlugins.includes('chinese-addons')" plugin="chinese-addons">
+            <NText delete>
+              {{ plugin }}
+            </NText>
+          </MustInstall>
+          <template v-else>
+            {{ plugin }}
+          </template>
         </NListItem>
       </NList>
       <NList style="min-width: 100px">
@@ -62,9 +70,11 @@ async function onUpload(files: UploadFileInfo[]) {
           {{ t('Available') }}
         </template>
         <NListItem v-for="plugin in availablePlugins" :key="plugin">
-          <NA :href="`https://github.com/fcitx-contrib/fcitx5-plugins/releases/download/js/${plugin}.zip`">
-            {{ plugin }}
-          </NA>
+          <MustInstall :plugin="plugin === 'jyutping' ? 'chinese-addons' : undefined">
+            <NA :href="`https://github.com/fcitx-contrib/fcitx5-plugins/releases/download/js/${plugin}.zip`">
+              {{ plugin }}
+            </NA>
+          </MustInstall>
         </NListItem>
       </NList>
     </NFlex>
