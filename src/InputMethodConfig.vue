@@ -60,7 +60,12 @@ function labelWithMinus(option: MenuOption) {
       'justify-content': 'space-between',
     },
   }, [
-    option.label as string,
+    h('div', {
+      style: {
+        'overflow': 'hidden',
+        'text-overflow': 'ellipsis',
+      },
+    }, [option.label as string]),
     h(MinusButton, {
       disabled: props.inputMethods.length === 1,
       onClick: (e: MouseEvent) => {
