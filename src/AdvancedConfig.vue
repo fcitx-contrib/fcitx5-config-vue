@@ -54,15 +54,14 @@ function selectAddon(item: string) {
         :options="options"
         @update-value="selectAddon"
       />
-      <template v-else>
-        <BasicConfig
-          :path="addon"
-          :config="manager.config"
-          :value="manager.form.value"
-          style="margin: 16px"
-          @update="(v) => manager.set(v)"
-        />
-      </template>
+      <BasicConfig
+        v-else
+        :path="addon"
+        :config="manager.config"
+        :value="manager.form.value"
+        style="margin: 16px"
+        @update="(v) => manager.set(v)"
+      />
     </NScrollbar>
     <FooterButtons
       v-if="mobileState === 'DETAIL'"

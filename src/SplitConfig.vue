@@ -1,13 +1,18 @@
 <script setup lang="ts">
-import { NLayout, NLayoutFooter, NLayoutSider, NMenu } from 'naive-ui'
-import { computed, ref } from 'vue'
+import { NLayout, NLayoutFooter, NLayoutSider, NMenu, NScrollbar } from 'naive-ui'
+import { computed, ref, watchEffect } from 'vue'
 import BasicConfig from './BasicConfig.vue'
 import FooterButtons from './FooterButtons.vue'
 import { ConfigManager } from './manager'
+import { isMobile } from './util'
 
 const props = defineProps<{
   uri: string
-  onClose: () => void
+}>()
+
+const emit = defineEmits<{
+  close: []
+  updateTitle: [string]
 }>()
 
 const options = { Children: [], ...window.fcitx.getConfig(props.uri) }.Children.map((child, i) => ({
@@ -19,10 +24,49 @@ const index = ref(0)
 const manager = computed(() => new ConfigManager(props.uri, index.value))
 
 const collapsed = ref(false)
+
+const mobileState = ref<'LIST' | 'DETAIL'>('LIST')
+
+watchEffect(() => {
+  let title = ''
+  if (isMobile.value && mobileState.value === 'DETAIL') {
+    title = options[index.value].label
+  }
+  emit('updateTitle', title)
+})
+
+function selectIndex(i: number) {
+  index.value = i
+  mobileState.value = 'DETAIL'
+}
 </script>
 
 <template>
-  <NLayout has-sider>
+  <div v-if="isMobile" style="display: flex; flex-direction: column; height: 100%">
+    <NScrollbar>
+      <NMenu
+        v-if="mobileState === 'LIST'"
+        :value="index"
+        :options="options"
+        @update-value="selectIndex"
+      />
+      <BasicConfig
+        v-else
+        :path="{ Option: '', ...manager.config }.Option"
+        :config="manager.config"
+        :value="manager.form.value"
+        style="margin: 16px"
+        @update="(v) => manager.set(v)"
+      />
+    </NScrollbar>
+    <FooterButtons
+      v-if="mobileState === 'DETAIL'"
+      is-return
+      :manager="manager"
+      @close="mobileState = 'LIST'"
+    />
+  </div>
+  <NLayout v-else has-sider>
     <NLayoutSider
       bordered
       collapse-mode="width"
@@ -55,7 +99,7 @@ const collapsed = ref(false)
       <NLayoutFooter position="absolute">
         <FooterButtons
           :manager="manager"
-          @close="onClose"
+          @close="emit('close')"
         />
       </NLayoutFooter>
     </NLayout>
