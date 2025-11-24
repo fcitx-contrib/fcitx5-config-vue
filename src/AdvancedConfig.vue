@@ -1,12 +1,14 @@
 <script setup lang="ts">
-import { NLayout, NLayoutFooter, NLayoutSider, NMenu } from 'naive-ui'
-import { computed, ref } from 'vue'
+import { NLayout, NLayoutFooter, NLayoutSider, NMenu, NScrollbar } from 'naive-ui'
+import { computed, ref, watchEffect } from 'vue'
 import BasicConfig from './BasicConfig.vue'
 import FooterButtons from './FooterButtons.vue'
 import { ConfigManager } from './manager'
+import { isMobile } from './util'
 
-defineProps<{
-  onClose: () => void
+const emit = defineEmits<{
+  close: []
+  updateTitle: [string]
 }>()
 
 const options = window.fcitx.getAddons().map(category => ({
@@ -19,15 +21,57 @@ const options = window.fcitx.getAddons().map(category => ({
   })),
 }))
 
+const addonNameMap = options.flatMap(option => option.children).reduce<Record<string, string>>((acc, value) => ({ ...acc, [value.key]: value.label }), {})
+
 const addon = ref(options[0].children[0].key)
 
 const manager = computed(() => new ConfigManager(`fcitx://config/addon/${addon.value}`))
 
 const collapsed = ref(false)
+
+const mobileState = ref<'DETAIL' | 'LIST'>('LIST')
+
+watchEffect(() => {
+  let title = ''
+  if (isMobile.value && mobileState.value === 'DETAIL') {
+    title = addonNameMap[addon.value]
+  }
+  emit('updateTitle', title)
+})
+
+function selectAddon(item: string) {
+  addon.value = item
+  mobileState.value = 'DETAIL'
+}
 </script>
 
 <template>
-  <NLayout has-sider>
+  <div v-if="isMobile" style="display: flex; flex-direction: column; height: 100%">
+    <NScrollbar>
+      <NMenu
+        v-if="mobileState === 'LIST'"
+        :value="addon"
+        :options="options"
+        @update-value="selectAddon"
+      />
+      <template v-else>
+        <BasicConfig
+          :path="addon"
+          :config="manager.config"
+          :value="manager.form.value"
+          style="margin: 16px"
+          @update="(v) => manager.set(v)"
+        />
+      </template>
+    </NScrollbar>
+    <FooterButtons
+      v-if="mobileState === 'DETAIL'"
+      is-return
+      :manager="manager"
+      @close="mobileState = 'LIST'"
+    />
+  </div>
+  <NLayout v-else has-sider>
     <NLayoutSider
       bordered
       collapse-mode="width"
@@ -60,7 +104,7 @@ const collapsed = ref(false)
       <NLayoutFooter position="absolute">
         <FooterButtons
           :manager="manager"
-          @close="onClose"
+          @close="emit('close')"
         />
       </NLayoutFooter>
     </NLayout>

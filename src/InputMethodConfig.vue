@@ -310,7 +310,7 @@ const filteredLanguageOptions = computed(() => {
     </NFlex>
     <NFlex
       v-else-if="mobileState === 'LANG_DETAIL'"
-      style="padding: 8px; justify-content: space-between"
+      style="padding-top: 8px; justify-content: space-between"
     >
       <NButton secondary @click="cancelAddingIM">
         {{ t('Cancel') }}
