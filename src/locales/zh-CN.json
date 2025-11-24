@@ -1,5 +1,6 @@
 {
   "Add": "添加",
+  "Add input methods": "添加输入法",
   "Advanced": "高级",
   "Available": "可用",
   "Cancel": "取消",
@@ -17,6 +18,7 @@
   "Redo": "重做",
   "Reset": "重置",
   "Reset to default": "重设为默认值",
+  "Return": "返回",
   "Select a language from the left list": "从左侧列表中选择一个语言",
   "Theme Editor": "主题编辑器",
   "Warning": "警告",

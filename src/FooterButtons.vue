@@ -2,9 +2,11 @@
 import type { ConfigManager } from './manager'
 import { NButton, NFlex } from 'naive-ui'
 import { t } from './i18n'
+import { isMobile } from './util'
 
 defineProps<{
   manager: ConfigManager
+  isReturn?: boolean
 }>()
 
 defineEmits<{
@@ -14,7 +16,10 @@ defineEmits<{
 
 <template>
   <NFlex
-    style="padding: 8px; justify-content: space-between"
+    :style="{
+      'padding': isMobile ? '8px 0 0 0' : '8px',
+      'justify-content': 'space-between',
+    }"
   >
     <NFlex>
       <NButton
@@ -38,12 +43,12 @@ defineEmits<{
         {{ t('Reset to default') }}
       </NButton>
     </NFlex>
-    <NFlex>
+    <NFlex style="flex-grow: 1; justify-content: end">
       <NButton
         secondary
         @click="$emit('close')"
       >
-        {{ t('Close') }}
+        {{ t(isReturn ? 'Return' : 'Close') }}
       </NButton>
     </NFlex>
   </NFlex>

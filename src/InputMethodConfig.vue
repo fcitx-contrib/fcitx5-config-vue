@@ -1,6 +1,6 @@
 <script lang="ts">
 import type { MenuOption } from 'naive-ui'
-import { NButton, NCheckbox, NCheckboxGroup, NFlex, NLayout, NLayoutFooter, NLayoutSider, NMenu, NText } from 'naive-ui'
+import { NButton, NCheckbox, NCheckboxGroup, NFlex, NLayout, NLayoutFooter, NLayoutSider, NMenu, NScrollbar, NText } from 'naive-ui'
 import { computed, h, ref, watchEffect } from 'vue'
 import BasicConfig from './BasicConfig.vue'
 import FooterButtons from './FooterButtons.vue'
@@ -8,6 +8,7 @@ import { t } from './i18n'
 import { ConfigManager } from './manager'
 import MinusButton from './MinusButton.vue'
 import PlusButton from './PlusButton.vue'
+import { isMobile } from './util'
 
 const languageName = new Intl.DisplayNames(navigator.language, { type: 'language' })
 
@@ -34,7 +35,11 @@ const props = defineProps<{
     displayName: string
     name: string
   }[]
-  onClose: () => void
+}>()
+
+const emit = defineEmits<{
+  close: []
+  updateTitle: [string]
 }>()
 
 const EN = 'en'
@@ -81,11 +86,56 @@ function labelWithMinus(option: MenuOption) {
   ])
 }
 
+// Mobile states
+const mobileState = ref<'IM_LIST' | 'IM_DETAIL' | 'LANG_LIST' | 'LANG_DETAIL'>('IM_LIST')
+
+// Desktop states
 const collapsed = ref(false)
 const adding = ref(false)
 
+watchEffect(() => {
+  let title = ''
+  if (isMobile.value) {
+    switch (mobileState.value) {
+      case 'IM_DETAIL':
+        title = props.inputMethods.filter(im => im.name === selectedInputMethod.value)[0].displayName
+        break
+      case 'LANG_LIST':
+        title = t('Add input methods')
+        break
+      case 'LANG_DETAIL':
+        title = getNameOf(selectedLanguage.value!)
+        break
+    }
+  }
+  else if (adding.value) {
+    title = t('Add input methods')
+  }
+  emit('updateTitle', title)
+})
+
 const currentLanguages = navigator.languages.map(lang => lang.split('-')[0])
 const selectedLanguage = ref<string | null>(null)
+
+function onSelectLanguage(language: string) {
+  selectedLanguage.value = language
+  mobileState.value = 'LANG_DETAIL'
+}
+
+function onSelectIM(im: string) {
+  selectedInputMethod.value = im
+  mobileState.value = 'IM_DETAIL'
+}
+
+function cancelAddingIM() {
+  imsToAdd.value = []
+  if (isMobile.value) {
+    mobileState.value = 'LANG_LIST'
+  }
+  else {
+    adding.value = false
+  }
+}
 
 const languageOptions = ref<{
   label: string
@@ -99,7 +149,8 @@ let map: { [key: string]: {
 let languageOfIM: { [key: string]: string } = {}
 
 watchEffect(() => {
-  if (!adding.value) {
+  // Execute only when entering language list view.
+  if ((isMobile.value && mobileState.value !== 'LANG_LIST') || (!isMobile.value && !adding.value)) {
     return
   }
   map = {}
@@ -187,7 +238,94 @@ const filteredLanguageOptions = computed(() => {
 </script>
 
 <template>
-  <NLayout has-sider>
+  <div v-if="isMobile" style="display: flex; flex-direction: column; height: 100%">
+    <NScrollbar>
+      <NMenu
+        v-if="mobileState === 'IM_LIST'"
+        :value="selectedInputMethod"
+        :collapsed="collapsed"
+        :collapsed-width="0"
+        :options="options"
+        :render-label="labelWithMinus"
+        @update-value="onSelectIM"
+      />
+      <BasicConfig
+        v-else-if="mobileState === 'IM_DETAIL'"
+        :path="selectedInputMethod"
+        :config="manager.config"
+        :value="manager.form.value"
+        style="margin: 16px"
+        @update="(v) => manager.set(v)"
+      />
+      <NMenu
+        v-else-if="mobileState === 'LANG_LIST'"
+        :value="selectedLanguage"
+        :options="filteredLanguageOptions"
+        @update-value="onSelectLanguage"
+      />
+      <NCheckboxGroup
+        v-else-if="mobileState === 'LANG_DETAIL'"
+        v-model:value="imsToAdd"
+        style="margin: 16px"
+      >
+        <NFlex vertical>
+          <NCheckbox
+            v-for="im of inputMethodsForLanguage"
+            :key="im.name"
+            :value="im.name"
+          >
+            <NText :strong="popularIMs.includes(im.name)">
+              {{ im.displayName }}
+            </NText>
+          </NCheckbox>
+        </NFlex>
+      </NCheckboxGroup>
+    </NScrollbar>
+    <NFlex
+      v-if="mobileState === 'IM_LIST'"
+      style="padding-top: 8px; justify-content: end"
+    >
+      <PlusButton
+        @click="mobileState = 'LANG_LIST'"
+      />
+    </NFlex>
+    <FooterButtons
+      v-else-if="mobileState === 'IM_DETAIL'"
+      :manager="manager"
+      is-return
+      @close="mobileState = 'IM_LIST'"
+    />
+    <NFlex v-else-if="mobileState === 'LANG_LIST'" style="padding-top: 8px; justify-content: space-between; align-items: center">
+      <NCheckbox
+        v-model:checked="onlyShowCurrentLanguage"
+      >
+        {{ t('Only show current language') }}
+      </NCheckbox>
+      <NButton
+        secondary
+        @click="mobileState = 'IM_LIST'"
+      >
+        {{ t('Return') }}
+      </NButton>
+    </NFlex>
+    <NFlex
+      v-else-if="mobileState === 'LANG_DETAIL'"
+      style="padding: 8px; justify-content: space-between"
+    >
+      <NButton secondary @click="cancelAddingIM">
+        {{ t('Cancel') }}
+      </NButton>
+      <NButton
+        secondary
+        type="info"
+        :disabled="imsToAdd.length === 0"
+        @click="add"
+      >
+        {{ t('Add') }}
+      </NButton>
+    </NFlex>
+  </div>
+  <NLayout v-else has-sider>
     <NLayoutSider
       bordered
       collapse-mode="width"
@@ -225,15 +363,14 @@ const filteredLanguageOptions = computed(() => {
           >
             {{ collapsed ? '' : t('Only show current language') }}
           </NCheckbox>
-          <div
+          <NFlex
             v-else
-            style="display: flex; justify-content: end"
+            style="padding: 8px; justify-content: end"
           >
             <PlusButton
-              style="align-self: flex-end"
               @click="adding = true"
             />
-          </div>
+          </NFlex>
         </NLayoutFooter>
       </NLayout>
     </NLayoutSider>
@@ -272,7 +409,7 @@ const filteredLanguageOptions = computed(() => {
           <NFlex
             style="padding: 8px; justify-content: space-between"
           >
-            <NButton secondary @click="adding = false">
+            <NButton secondary @click="cancelAddingIM">
               {{ t('Cancel') }}
             </NButton>
             <NButton
@@ -303,7 +440,7 @@ const filteredLanguageOptions = computed(() => {
         <NLayoutFooter position="absolute">
           <FooterButtons
             :manager="manager"
-            @close="onClose"
+            @close="emit('close')"
           />
         </NLayoutFooter>
       </template>
