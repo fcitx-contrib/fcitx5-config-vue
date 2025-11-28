@@ -5,8 +5,9 @@
   "Available": "可用",
   "Cancel": "取消",
   "Close": "关闭",
-  "Download plugin zip by clicking links below": "点击下方链接下载插件 zip",
-  "then click (or drag them to) this area": "然后点击（或拖拽它们到）此区域",
+  "Download plugin zip by clicking buttons under \"Available\"": "点击“可用”下方的按钮下载插件 zip",
+  "then click this area to load zip": "然后点击此区域加载 zip",
+  "then click (or drag them to) this area to load zip": "然后点击（或拖拽它们到）此区域加载 zip",
   "Global Config": "全局配置",
   "Input Method": "输入法",
   "Installed": "已安装",
@@ -24,5 +25,16 @@
   "Warning": "警告",
   "Undo": "撤销",
   "Unknown": "未知",
-  "Your user data and installed plugins will be removed.": "您的用户数据和已安装的插件将被删除。"
+  "Your user data and installed plugins will be removed.": "您的用户数据和已安装的插件将被删除。",
+  "language": {
+    "Chinese": "中文",
+    "English": "英语",
+    "Japanese": "日语",
+    "Korean": "韩语",
+    "Sinhala": "僧伽罗语",
+    "Thai": "泰语",
+    "Vietnamese": "越南语",
+    "Generic": "通用",
+    "Other": "其他"
+  }
 }
