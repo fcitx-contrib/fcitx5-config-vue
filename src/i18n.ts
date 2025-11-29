@@ -1,8 +1,16 @@
 import { createI18n } from 'vue-i18n'
 import zhCN from './locales/zh-CN.json'
 
-const messages = {
-  'en': Object.fromEntries(Object.keys(zhCN).map(key => [key, key])),
+function replaceLeaves(object: Record<string, any>): Record<string, any> {
+  const result: Record<string, any> = {}
+  for (const [key, value] of Object.entries(object)) {
+    result[key] = typeof value === 'object' ? replaceLeaves(value) : key
+  }
+  return result
+}
+
+const messages: Record<string, any> = {
+  'en': replaceLeaves(zhCN),
   'zh-CN': zhCN,
 }
 
@@ -18,6 +26,7 @@ export function getLocale(messages: { [key: string]: any }) {
       return 'zh-CN'
     }
   }
+  return 'en'
 }
 
 const i18n = createI18n({
