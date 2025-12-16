@@ -20,9 +20,12 @@ const plugins: [string, string][] = [
   ['anthy', 'Japanese'],
   ['chewing', 'Chinese'],
   ['chinese-addons', 'Chinese'],
+  ['cskk', 'Japanese'],
   ['hallelujah', 'English'],
   ['hangul', 'Korean'],
   ['jyutping', 'Chinese'],
+  ['keyman', 'Generic'],
+  ['kkc', 'Japanese'],
   ['lua', 'Other'],
   ['m17n', 'Generic'],
   ['mozc', 'Japanese'],
@@ -31,6 +34,7 @@ const plugins: [string, string][] = [
   ['skk', 'Japanese'],
   ['thai', 'Thai'],
   ['unikey', 'Vietnamese'],
+  ['zhuyin', 'Chinese'],
 ]
 
 function tLanguage(language: string) {
