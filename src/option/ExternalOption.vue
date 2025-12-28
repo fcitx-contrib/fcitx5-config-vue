@@ -4,6 +4,7 @@ import { computed, h } from 'vue'
 import BasicConfig from '../BasicConfig.vue'
 import FooterButtons from '../FooterButtons.vue'
 import GearButton from '../GearButton.vue'
+import { t } from '../i18n'
 import { ConfigManager } from '../manager'
 
 const props = defineProps<{
@@ -52,9 +53,9 @@ function click() {
       }
       else {
         dialog.error({
-          title: 'Error',
-          content: `Unknown External Option: ${props.config.Option}`,
-          positiveText: 'OK',
+          title: t('Error'),
+          content: t('Unimplemented External Option: {option}', { option: props.config.Option }),
+          positiveText: t('OK'),
         })
       }
   }

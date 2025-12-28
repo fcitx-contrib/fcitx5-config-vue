@@ -8,6 +8,7 @@
   "Download plugin zip by clicking buttons under \"Available\"": "点击“可用”下方的按钮下载插件 zip",
   "then click this area to load zip": "然后点击此区域加载 zip",
   "then click (or drag them to) this area to load zip": "然后点击（或拖拽它们到）此区域加载 zip",
+  "Error": "错误",
   "Global Config": "全局配置",
   "Input Method": "输入法",
   "Installed": "已安装",
@@ -24,6 +25,7 @@
   "Theme Editor": "主题编辑器",
   "Warning": "警告",
   "Undo": "撤销",
+  "Unimplemented External Option: {option}": "未实现的外部选项：{option}",
   "Unknown": "未知",
   "Your user data and installed plugins will be removed.": "您的用户数据和已安装的插件将被删除。",
   "language": {

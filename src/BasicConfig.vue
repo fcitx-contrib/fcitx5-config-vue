@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import type { Config } from 'fcitx5-js'
 import { NAlert, NDialogProvider, NForm, NFormItem } from 'naive-ui'
-import { computed } from 'vue'
 import TooltipButton from './TooltipButton.vue'
-import { isMobile, toComponent } from './util'
+import { labelPlacement, toComponent } from './util'
 
 defineProps<{
   path: string
@@ -11,8 +10,6 @@ defineProps<{
   value: any
   onUpdate: (value: any) => void
 }>()
-
-const labelPlacement = computed(() => isMobile.value ? 'top' : 'left')
 </script>
 
 <template>

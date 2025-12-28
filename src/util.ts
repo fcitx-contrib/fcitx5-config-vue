@@ -15,6 +15,7 @@ import UnknownOption from './option/UnknownOption.vue'
 
 const breakpoint = useBreakpoint()
 export const isMobile = computed(() => breakpoint.value === 'xs' || breakpoint.value === 's')
+export const labelPlacement = computed(() => isMobile.value ? 'top' : 'left')
 
 export function extractValue(config: Config, reset: boolean) {
   const value: { [key: string]: any } = {}

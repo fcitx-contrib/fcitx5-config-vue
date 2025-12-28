@@ -59,7 +59,6 @@ function selectAddon(item: string) {
         :path="addon"
         :config="manager.config"
         :value="manager.form.value"
-        style="margin: 16px"
         @update="(v) => manager.set(v)"
       />
     </NScrollbar>

@@ -254,7 +254,6 @@ const filteredLanguageOptions = computed(() => {
         :path="selectedInputMethod"
         :config="manager.config"
         :value="manager.form.value"
-        style="margin: 16px"
         @update="(v) => manager.set(v)"
       />
       <NMenu
@@ -266,7 +265,6 @@ const filteredLanguageOptions = computed(() => {
       <NCheckboxGroup
         v-else-if="mobileState === 'LANG_DETAIL'"
         v-model:value="imsToAdd"
-        style="margin: 16px"
       >
         <NFlex vertical>
           <NCheckbox

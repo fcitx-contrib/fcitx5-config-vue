@@ -7,7 +7,7 @@ defineProps<{
 </script>
 
 <template>
-  <NTooltip trigger="hover">
+  <NTooltip trigger="click">
     <template #trigger>
       <NButton
         secondary
