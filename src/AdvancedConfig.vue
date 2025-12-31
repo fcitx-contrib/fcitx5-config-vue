@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { NLayout, NLayoutFooter, NLayoutSider, NMenu, NScrollbar } from 'naive-ui'
+import { NDialogProvider, NLayout, NLayoutFooter, NLayoutSider, NMenu, NScrollbar } from 'naive-ui'
 import { computed, ref, watchEffect } from 'vue'
 import BasicConfig from './BasicConfig.vue'
+import DataManager from './DataManager.vue'
 import FooterButtons from './FooterButtons.vue'
+import { t } from './i18n'
 import { ConfigManager } from './manager'
 import { isMobile } from './util'
 
@@ -21,9 +23,16 @@ const options = window.fcitx.getAddons().map(category => ({
   })),
 }))
 
-const addonNameMap = options.flatMap(option => option.children).reduce<Record<string, string>>((acc, value) => ({ ...acc, [value.key]: value.label }), {})
+const menuOptions = [{
+  key: 'data',
+  label: t('Data manager'),
+}, ...options]
 
-const addon = ref(options[0].children[0].key)
+const selectedItem = ref('data')
+
+const addonNameMap = options.flatMap(option => option.children).reduce<Record<string, string>>((acc, value) => ({ ...acc, [value.key]: value.label }), { data: t('Data manager') })
+
+const addon = computed(() => selectedItem.value === 'data' ? options[0].children[0].key : selectedItem.value)
 
 const manager = computed(() => new ConfigManager(`fcitx://config/addon/${addon.value}`))
 
@@ -34,13 +43,13 @@ const mobileState = ref<'DETAIL' | 'LIST'>('LIST')
 watchEffect(() => {
   let title = ''
   if (isMobile.value && mobileState.value === 'DETAIL') {
-    title = addonNameMap[addon.value]
+    title = addonNameMap[selectedItem.value]
   }
   emit('updateTitle', title)
 })
 
-function selectAddon(item: string) {
-  addon.value = item
+function selectItem(item: string) {
+  selectedItem.value = item
   mobileState.value = 'DETAIL'
 }
 </script>
@@ -50,10 +59,13 @@ function selectAddon(item: string) {
     <NScrollbar>
       <NMenu
         v-if="mobileState === 'LIST'"
-        :value="addon"
-        :options="options"
-        @update-value="selectAddon"
+        :value="selectedItem"
+        :options="menuOptions"
+        @update-value="selectItem"
       />
+      <NDialogProvider v-else-if="selectedItem === 'data'">
+        <DataManager />
+      </NDialogProvider>
       <BasicConfig
         v-else
         :path="addon"
@@ -65,7 +77,7 @@ function selectAddon(item: string) {
     <FooterButtons
       v-if="mobileState === 'DETAIL'"
       is-return
-      :manager="manager"
+      :manager="selectedItem === 'data' ? undefined : manager"
       @close="mobileState = 'LIST'"
     />
   </div>
@@ -81,8 +93,8 @@ function selectAddon(item: string) {
       @expand="collapsed = false"
     >
       <NMenu
-        v-model:value="addon"
-        :options="options"
+        v-model:value="selectedItem"
+        :options="menuOptions"
       />
     </NLayoutSider>
     <NLayout style="height: calc(100vh - 100px)">
@@ -91,7 +103,11 @@ function selectAddon(item: string) {
         :native-scrollbar="false"
         style="bottom: 50px"
       >
+        <NDialogProvider v-if="selectedItem === 'data'">
+          <DataManager style="margin: 16px" />
+        </NDialogProvider>
         <BasicConfig
+          v-else
           :path="addon"
           :config="manager.config"
           :value="manager.form.value"
@@ -101,7 +117,7 @@ function selectAddon(item: string) {
       </NLayout>
       <NLayoutFooter position="absolute">
         <FooterButtons
-          :manager="manager"
+          :manager="selectedItem === 'data' ? undefined : manager"
           @close="emit('close')"
         />
       </NLayoutFooter>

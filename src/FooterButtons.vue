@@ -5,7 +5,7 @@ import { t } from './i18n'
 import { isMobile } from './util'
 
 defineProps<{
-  manager: ConfigManager
+  manager?: ConfigManager
   isReturn?: boolean
 }>()
 
@@ -21,7 +21,7 @@ defineEmits<{
       'justify-content': 'space-between',
     }"
   >
-    <NFlex>
+    <NFlex v-if="manager">
       <NButton
         secondary
         :disabled="manager.undoStack.value.length === 0"
