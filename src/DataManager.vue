@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import type { UploadFileInfo } from 'naive-ui'
 import { NButton, NFlex, NForm, NFormItem, NUpload, NUploadDragger, useDialog, useMessage } from 'naive-ui'
-import UZIP from 'uzip'
 import { h, ref } from 'vue'
 import { t } from './i18n'
 import TooltipButton from './TooltipButton.vue'
 import { download, isMobile, labelPlacement } from './util'
+
+type UZIPFiles = Record<string, Uint8Array>
 
 const dialog = useDialog()
 const message = useMessage()
@@ -20,7 +21,7 @@ const fcitx5Prefixes = [{
 const hamsterRimeDir = 'HamsterBackup/RIME/Rime/'
 const meta = 'metadata.json'
 
-function distribute(manifest: UZIP.UZIPFiles, prefixes: { srcPrefix: string, dstPrefix: string }[]) {
+function distribute(manifest: UZIPFiles, prefixes: { srcPrefix: string, dstPrefix: string }[]) {
   Object.entries(manifest).forEach(([path, data]) => {
     for (const { srcPrefix, dstPrefix } of prefixes) {
       if (path.startsWith(srcPrefix)) {
@@ -40,17 +41,17 @@ function distribute(manifest: UZIP.UZIPFiles, prefixes: { srcPrefix: string, dst
 const backups = {
   fcitx5: {
     name: 'fcitx5-*_YYYY-MM-DD*.zip',
-    validate: (manifest: UZIP.UZIPFiles) => {
+    validate: (manifest: UZIPFiles) => {
       return meta in manifest
     },
-    extract: (manifest: UZIP.UZIPFiles) => distribute(manifest, fcitx5Prefixes),
+    extract: (manifest: UZIPFiles) => distribute(manifest, fcitx5Prefixes),
   },
   hamster: {
     name: 'YYYYMMDD-*.zip',
-    validate: (manifest: UZIP.UZIPFiles) => {
+    validate: (manifest: UZIPFiles) => {
       return hamsterRimeDir in manifest
     },
-    extract: (manifest: UZIP.UZIPFiles) => distribute(manifest, [{
+    extract: (manifest: UZIPFiles) => distribute(manifest, [{
       srcPrefix: hamsterRimeDir,
       dstPrefix: '/home/web_user/.local/share/fcitx5/rime/',
     }]),
@@ -76,7 +77,7 @@ function importData(source: 'fcitx5' | 'hamster') {
       const file = fileList.value[0]
       fileList.value = []
       const arrayBuffer = await file.file?.arrayBuffer()
-      const manifest = UZIP.parse(arrayBuffer!)
+      const manifest = window.fcitx.UZIP.parse(arrayBuffer!)
       if (!backup.validate(manifest)) {
         message.error(t('Invalid zip'))
         return
