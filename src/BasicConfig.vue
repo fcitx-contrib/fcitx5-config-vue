@@ -21,13 +21,40 @@ const options = [{ label: t('Reset to default'), key: 'reset' }]
 let selectedChild: Config | null = null
 let selectedOption = ''
 
+let touchTimer: number | null = null
+
 function onContextMenu(e: MouseEvent, child: Config, option: string) {
+  if ('Type' in child && child.Type === 'External') {
+    return
+  }
   e.preventDefault()
   x.value = e.clientX
   y.value = e.clientY
   showContextMenu.value = true
   selectedChild = child
   selectedOption = option
+}
+
+function onTouchStart(e: TouchEvent, child: Config, option: string) {
+  if ('Type' in child && child.Type === 'External') {
+    return
+  }
+  e.preventDefault() // Prevent select label.
+  x.value = e.touches[0].clientX
+  y.value = e.touches[0].clientY
+  selectedChild = child
+  selectedOption = option
+
+  touchTimer = window.setTimeout(() => {
+    showContextMenu.value = true
+  }, 300)
+}
+
+function onTouchEnd() {
+  if (touchTimer) {
+    clearTimeout(touchTimer)
+    touchTimer = null
+  }
 }
 
 function reset() {
@@ -49,7 +76,12 @@ function reset() {
       :key="`${path}/${child.Option}`"
     >
       <template #label>
-        <div @contextmenu="e => onContextMenu(e, child as Config, child.Option)">
+        <div
+          @contextmenu="e => onContextMenu(e, child as Config, child.Option)"
+          @touchstart="e => onTouchStart(e, child as Config, child.Option)"
+          @touchend="onTouchEnd"
+          @touchcancel="onTouchEnd"
+        >
           {{ child.Description }}
         </div>
         <TooltipButton
