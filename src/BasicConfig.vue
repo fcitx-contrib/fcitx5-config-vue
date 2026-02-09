@@ -1,15 +1,38 @@
 <script setup lang="ts">
 import type { Config } from 'fcitx5-js'
-import { NAlert, NDialogProvider, NForm, NFormItem } from 'naive-ui'
+import { NAlert, NDialogProvider, NDropdown, NForm, NFormItem } from 'naive-ui'
+import { ref } from 'vue'
+import { t } from './i18n'
 import TooltipButton from './TooltipButton.vue'
-import { labelPlacement, toComponent } from './util'
+import { extractValue, labelPlacement, toComponent } from './util'
 
-defineProps<{
+const props = defineProps<{
   path: string
   config: Config
   value: any
   onUpdate: (value: any) => void
 }>()
+
+const showContextMenu = ref(false)
+const x = ref(0)
+const y = ref(0)
+const options = [{ label: t('Reset to default'), key: 'reset' }]
+
+let selectedChild: Config | null = null
+let selectedOption = ''
+
+function onContextMenu(e: MouseEvent, child: Config, option: string) {
+  e.preventDefault()
+  x.value = e.clientX
+  y.value = e.clientY
+  showContextMenu.value = true
+  selectedChild = child
+  selectedOption = option
+}
+
+function reset() {
+  props.onUpdate({ ...props.value, [selectedOption]: extractValue(selectedChild!, true) })
+}
 </script>
 
 <template>
@@ -26,7 +49,9 @@ defineProps<{
       :key="`${path}/${child.Option}`"
     >
       <template #label>
-        {{ child.Description }}
+        <div @contextmenu="e => onContextMenu(e, child as Config, child.Option)">
+          {{ child.Description }}
+        </div>
         <TooltipButton
           v-if="child.Tooltip"
           :text="child.Tooltip"
@@ -41,5 +66,14 @@ defineProps<{
         />
       </NDialogProvider>
     </NFormItem>
+    <NDropdown
+      v-model:show="showContextMenu"
+      trigger="manual"
+      :x="x"
+      :y="y"
+      :options="options"
+      @clickoutside="showContextMenu = false"
+      @select="reset"
+    />
   </NForm>
 </template>
