@@ -18,18 +18,19 @@ export const isMobile = computed(() => breakpoint.value === 'xs' || breakpoint.v
 export const labelPlacement = computed(() => isMobile.value ? 'top' : 'left')
 
 export function extractValue(config: Config, reset: boolean) {
+  if (reset && 'DefaultValue' in config) {
+    return config.DefaultValue
+  }
+  if (!reset && 'Value' in config) {
+    return config.Value
+  }
+  // For List|Entries, Children is definition only and doesn't contain value, so must check Value first.
   if ('Children' in config && Array.isArray(config.Children)) {
     const value: { [key: string]: any } = {}
     for (const child of config.Children) {
       value[child.Option] = extractValue(child as Config, reset)
     }
     return value
-  }
-  if (reset && 'DefaultValue' in config) {
-    return config.DefaultValue
-  }
-  if (!reset && 'Value' in config) {
-    return config.Value
   }
   return ''
 }
