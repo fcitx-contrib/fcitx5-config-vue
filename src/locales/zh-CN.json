@@ -1,4 +1,5 @@
 {
+  "Accept format: {format}": "接受的格式：{format}",
   "Add": "添加",
   "Add input methods": "添加输入法",
   "Advanced": "高级",
@@ -7,6 +8,9 @@
   "Click or drag to this area": "点击或拖拽到此区域",
   "Click this area": "点击此区域",
   "Close": "关闭",
+  "Convert .dict to .txt": "将 .dict 转换为 .txt",
+  "Convert failed": "转换失败",
+  "Convert succeeded": "转换成功",
   "Data manager": "数据管理",
   "Download plugin zip by clicking buttons under \"Available\"": "点击“可用”下方的按钮下载插件 zip",
   "then click this area to load zip": "然后点击此区域加载 zip",
