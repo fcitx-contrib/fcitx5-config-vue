@@ -20,6 +20,8 @@ const fcitx5Prefixes = [{
 }]
 const hamsterRimeDir = 'HamsterBackup/RIME/Rime/'
 const meta = 'metadata.json'
+const ISO_MILLIS_SUFFIX = /\.\d{3}Z$/
+const ISO_COLON = /:/g
 
 function distribute(manifest: UZIPFiles, prefixes: { srcPrefix: string, dstPrefix: string }[]) {
   Object.entries(manifest).forEach(([path, data]) => {
@@ -125,8 +127,8 @@ async function exportData() {
   manifest[meta] = new TextEncoder().encode(JSON.stringify(metaJson))
   const name = `fcitx5-online_${date
     .toISOString()
-    .replace(/\.\d{3}Z$/, 'Z')
-    .replace(/:/g, '_')}.zip`
+    .replace(ISO_MILLIS_SUFFIX, 'Z')
+    .replace(ISO_COLON, '_')}.zip`
   download(await window.fcitx.zip(manifest), name)
   exporting.value = false
 }
