@@ -2,8 +2,10 @@
 import FileConverter from './FileConverter.vue'
 import { t } from './i18n'
 
+const DICT_SUFFIX = /\.dict$/
+
 function renameDict(name: string) {
-  return name.replace(/\.dict$/, '.txt')
+  return name.replace(DICT_SUFFIX, '.txt')
 }
 
 function convertDict(src: string, dst: string) {

@@ -16,7 +16,7 @@ async function onUpload(files: UploadFileInfo[]) {
   if (files.length === 0) {
     return
   }
-  const file = files[files.length - 1]
+  const file = files.at(-1)
   const arrayBuffer = await file.file?.arrayBuffer()
   const src = `/tmp/${file.name}`
   const newName = props.rename(file.name)
