@@ -2,6 +2,7 @@
 import type { UploadFileInfo } from 'naive-ui'
 import { NButton, NFlex, NForm, NFormItem, NUpload, NUploadDragger, useDialog, useMessage } from 'naive-ui'
 import { h, ref } from 'vue'
+import { CONFIG, RIME, SHARE } from './constant'
 import { t } from './i18n'
 import TooltipButton from './TooltipButton.vue'
 import { download, isMobile, labelPlacement } from './util'
@@ -13,10 +14,10 @@ const message = useMessage()
 
 const fcitx5Prefixes = [{
   srcPrefix: 'external/config/',
-  dstPrefix: '/home/web_user/.config/fcitx5/',
+  dstPrefix: CONFIG,
 }, {
   srcPrefix: 'external/data/',
-  dstPrefix: '/home/web_user/.local/share/fcitx5/',
+  dstPrefix: SHARE,
 }]
 const hamsterRimeDir = 'HamsterBackup/RIME/Rime/'
 const meta = 'metadata.json'
@@ -55,7 +56,7 @@ const backups = {
     },
     extract: (manifest: UZIPFiles) => distribute(manifest, [{
       srcPrefix: hamsterRimeDir,
-      dstPrefix: '/home/web_user/.local/share/fcitx5/rime/',
+      dstPrefix: RIME,
     }]),
   },
 }
