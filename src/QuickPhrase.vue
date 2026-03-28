@@ -66,6 +66,15 @@ const content = ref<QuickPhrase[]>([])
 const showNewFile = ref(false)
 const newFileName = ref('')
 
+const isNewFileNameValid = computed(() => {
+  const name = newFileName.value
+  if (!name || name.includes('/') || name.includes('\\'))
+    return false
+  if (name === '.' || name === '..')
+    return false
+  return true
+})
+
 function readQuickPhrases(name: string) {
   const userPath = `${QUICKPHRASE_DIR}${name}.mb`
   const systemPath = `${QUICKPHRASE_SYSTEM_DIR}${name}.mb`
@@ -186,7 +195,7 @@ const columns: DataTableColumns<QuickPhrase> = [
         <NButton secondary @click="cancelNewFile">
           {{ t('Cancel') }}
         </NButton>
-        <NButton secondary type="info" @click="createFile">
+        <NButton secondary type="info" :disabled="!isNewFileNameValid" @click="createFile">
           {{ t('OK') }}
         </NButton>
       </template>
