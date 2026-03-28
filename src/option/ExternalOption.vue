@@ -8,6 +8,8 @@ import FooterButtons from '../FooterButtons.vue'
 import GearButton from '../GearButton.vue'
 import { t } from '../i18n'
 import { ConfigManager } from '../manager'
+import QuickPhrase from '../QuickPhrase.vue'
+import { isMobile } from '../util'
 
 const props = defineProps<{
   config: {
@@ -43,6 +45,16 @@ function click() {
         onNegativeClick() {
           instance.destroy()
         },
+      })
+      break
+    }
+    case 'QuickPhrase': {
+      const instance = dialog.info({
+        title: props.config.Description,
+        content: () => h(QuickPhrase, {
+          onClose: () => instance.destroy(),
+        }),
+        style: isMobile.value ? { 'width': '100vw', 'max-width': 'min(100vw, 600px)' } : { width: '600px' },
       })
       break
     }
