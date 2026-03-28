@@ -53,7 +53,6 @@ onMounted(() => {
       ref="inputRef"
       v-model:value="inputValue"
       @change="handleChange"
-      @blur="handleChange"
     />
     <span v-else>{{ value }}</span>
   </div>
