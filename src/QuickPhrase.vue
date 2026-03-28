@@ -200,7 +200,7 @@ const columns: DataTableColumns<QuickPhrase> = [
         <NButton secondary :disabled="checkedRowKeys.length === 0" @click="removeItems">
           {{ t('Remove items') }}
         </NButton>
-        <NButton secondary @click="remove">
+        <NButton secondary type="error" @click="remove">
           {{ t('Remove') }}
         </NButton>
         <NButton secondary type="info" @click="save">
