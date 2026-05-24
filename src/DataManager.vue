@@ -139,7 +139,7 @@ async function exportData() {
   <NForm :label-placement="labelPlacement" label-width="200px">
     <NFormItem>
       <template #label>
-        {{ t('Import data from ...') }}
+        {{ t('Import data from …') }}
       </template>
       <NFlex vertical>
         <NFlex align="center">
@@ -158,7 +158,7 @@ async function exportData() {
     </NFormItem>
     <NFormItem>
       <template #label>
-        {{ t('Export data to ...') }}
+        {{ t('Export data to …') }}
       </template>
       <NButton :disabled="exporting" @click="exportData">
         Fcitx5 Android/macOS
