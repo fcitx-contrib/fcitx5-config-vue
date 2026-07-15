@@ -11,7 +11,7 @@ interface Dict {
   enabled: boolean
 }
 
-const DICT_DIR = `${PINYIN}/dictionaries`
+const DICT_DIR = `${PINYIN}dictionaries`
 
 const DICT_SUFFIX = /\.dict$/
 const SCEL_SUFFIX = /\.scel$/
@@ -81,32 +81,25 @@ function onUpload(files: UploadFileInfo[]) {
 
 function importDict(filename: string, arrayBuffer: ArrayBuffer): boolean {
   if (filename.endsWith('.dict')) {
-    const dst = `${DICT_DIR}/${filename}`
-    fs.writeFile(dst, new Uint8Array(arrayBuffer))
+    fs.writeFile(`${DICT_DIR}/${filename}`, new Uint8Array(arrayBuffer))
     return true
   }
-  else if (filename.endsWith('.scel')) {
-    const src = `/tmp/${filename}`
-    const tmp = `/tmp/${filename.replace(SCEL_SUFFIX, '.txt')}`
-    const dst = `${DICT_DIR}/${filename.replace(SCEL_SUFFIX, '.dict')}`
-    fs.writeFile(src, new Uint8Array(arrayBuffer))
-    if (decompileScel(src, tmp) === 0) {
-      const res = compileDict(tmp, dst) === 0
-      fs.unlink(src)
-      fs.unlink(tmp)
-      return res
+  const src = `/tmp/${filename}`
+  fs.writeFile(src, new Uint8Array(arrayBuffer))
+  const txt = `/tmp/${filename.replace(SCEL_SUFFIX, '.txt')}`
+  const dst = `${DICT_DIR}/${filename.replace(SCEL_SUFFIX, '.dict').replace(TEXT_SUFFIX, '.dict')}`
+  try {
+    if (filename.endsWith('.scel') && decompileScel(src, txt) !== 0) {
+      return false
     }
-    fs.unlink(src)
+    return compileDict(txt, dst) === 0
   }
-  else if (filename.endsWith('.txt')) {
-    const src = `/tmp/${filename}`
-    const dst = `${DICT_DIR}/${filename.replace(TEXT_SUFFIX, '.dict')}`
-    fs.writeFile(src, new Uint8Array(arrayBuffer))
-    const res = compileDict(src, dst) === 0
+  finally {
     fs.unlink(src)
-    return res
+    if (txt !== src) {
+      fs.unlink(txt)
+    }
   }
-  return false
 }
 
 function compileDict(src: string, dst: string) {
