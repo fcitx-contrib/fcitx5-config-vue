@@ -2,7 +2,7 @@
 import type { UploadFileInfo, UploadInst } from 'naive-ui'
 import { NA, NButton, NButtonGroup, NCheckbox, NFlex, NList, NListItem, NPopconfirm, NText, NUpload, useMessage } from 'naive-ui'
 import { onMounted, ref } from 'vue'
-import { PINYIN } from './constant.js'
+import { PINYIN } from './constant'
 import FileConverter from './FileConverter.vue'
 import { t } from './i18n'
 
@@ -109,10 +109,6 @@ function importDict(filename: string, arrayBuffer: ArrayBuffer): boolean {
   return false
 }
 
-function renameDict(name: string) {
-  return name.replace(DICT_SUFFIX, '.txt')
-}
-
 function compileDict(src: string, dst: string) {
   return window.fcitx.cli('libime_pinyindict', src, dst)
 }
@@ -160,7 +156,15 @@ onMounted(() => {
 </script>
 
 <template>
-  <NFlex v-if="!useConverter">
+  <NFlex v-if="useConverter" vertical>
+    {{ t('Convert .dict to .txt') }}
+    <FileConverter accept=".dict" :rename="(name: string) => name.replace(DICT_SUFFIX, '.txt')" :convert="decompileDict" />
+    <NButton size="small" @click="useConverter = false">
+      {{ t('Return') }}
+    </NButton>
+  </NFlex>
+
+  <NFlex v-else>
     <NFlex vertical style="flex-grow: 1">
       <NList bordered clickable :show-divider="false" style="flex-grow: 1">
         <NListItem v-for="dict in dicts" :key="dict.id" @click="selectedDict = dict">
@@ -212,13 +216,5 @@ onMounted(() => {
         @update:file-list="onUpload"
       />
     </NFlex>
-  </NFlex>
-
-  <NFlex v-else vertical>
-    {{ t('Convert .dict to .txt') }}
-    <FileConverter accept=".dict" :rename="renameDict" :convert="decompileDict" />
-    <NButton size="small" @click="useConverter = false">
-      {{ t('Return') }}
-    </NButton>
   </NFlex>
 </template>
