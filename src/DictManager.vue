@@ -41,6 +41,7 @@ function refreshDicts() {
     })
     .sort((a, b) => a.id.localeCompare(b.id))
   dicts.value = result
+  window.fcitx.setConfig('fcitx://config/addon/pinyin/dictmanager', {})
 }
 
 function handleDictChecked(id: string, checked: boolean) {
