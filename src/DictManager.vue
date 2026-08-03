@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { UploadFileInfo, UploadInst } from 'naive-ui'
-import { NA, NButton, NButtonGroup, NCheckbox, NFlex, NList, NListItem, NPopconfirm, NText, NUpload, useMessage } from 'naive-ui'
+import { NA, NButton, NCheckbox, NFlex, NList, NListItem, NPopconfirm, NText, NUpload, useMessage } from 'naive-ui'
 import { onMounted, onUnmounted, ref } from 'vue'
 import { PINYIN } from './constant'
 import FileConverter from './FileConverter.vue'
@@ -188,24 +188,22 @@ onUnmounted(() => {
       <NButton size="small" @click="useConverter = true">
         {{ t('Convert') }}
       </NButton>
-      <NButtonGroup vertical>
-        <NPopconfirm @positive-click="handleRemove">
-          <template #trigger>
-            <NButton strong secondary type="error" size="small" :disabled="!selectedDict">
-              {{ t('Remove') }}
-            </NButton>
-          </template>
-          {{ t('Are you sure to remove {name}?', { name: selectedDict?.id ?? '' }) }}
-        </NPopconfirm>
-        <NPopconfirm @positive-click="handleRemoveAll">
-          <template #trigger>
-            <NButton type="error" size="small" :disabled="dicts.length === 0">
-              {{ t('Remove all') }}
-            </NButton>
-          </template>
-          {{ t('Are you sure to remove all dictionaries?') }}
-        </NPopconfirm>
-      </NButtonGroup>
+      <NPopconfirm @positive-click="handleRemove">
+        <template #trigger>
+          <NButton strong secondary type="error" size="small" :disabled="!selectedDict">
+            {{ t('Remove') }}
+          </NButton>
+        </template>
+        {{ t('Are you sure to remove {name}?', { name: selectedDict?.id ?? '' }) }}
+      </NPopconfirm>
+      <NPopconfirm @positive-click="handleRemoveAll">
+        <template #trigger>
+          <NButton type="error" size="small" :disabled="dicts.length === 0">
+            {{ t('Remove all') }}
+          </NButton>
+        </template>
+        {{ t('Are you sure to remove all dictionaries?') }}
+      </NPopconfirm>
       <NUpload
         ref="uploadRef"
         v-model:file-list="fileList"
