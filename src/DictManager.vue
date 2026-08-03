@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { UploadFileInfo, UploadInst } from 'naive-ui'
 import { NA, NButton, NButtonGroup, NCheckbox, NFlex, NList, NListItem, NPopconfirm, NText, NUpload, useMessage } from 'naive-ui'
-import { onMounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 import { PINYIN } from './constant'
 import FileConverter from './FileConverter.vue'
 import { t } from './i18n'
@@ -23,12 +23,14 @@ const message = useMessage()
 const fs = window.fcitx.Module.FS
 
 const uploadRef = ref<UploadInst | null>(null)
+const fileList = ref<UploadFileInfo[]>([])
 const useConverter = ref(false)
 
 const dicts = ref<Dict[]>([])
 const selectedDict = ref<Dict | null>(null)
 
-let uploadTimer: number | null = null
+// Workaround naive-ui's behavior that batch upload n files calls onUpload n times.
+let uploadTimer: ReturnType<typeof setTimeout> | undefined
 
 function refreshDicts() {
   const result = fs.readdir(DICT_DIR)
@@ -58,11 +60,9 @@ function onUpload(files: UploadFileInfo[]) {
     return
   }
 
-  if (uploadTimer) {
-    clearTimeout(uploadTimer)
-    uploadTimer = null
-  }
+  clearTimeout(uploadTimer)
   uploadTimer = window.setTimeout(async () => {
+    uploadTimer = undefined
     let success = 0
     let failure = 0
     for (const file of files) {
@@ -76,6 +76,7 @@ function onUpload(files: UploadFileInfo[]) {
     }
     message.info(t('Importing {total} dictionary(-ies): {success} suceess, {failure} failure', { total: success + failure, success, failure }))
     refreshDicts()
+    fileList.value = []
   }, 300)
 }
 
@@ -146,6 +147,10 @@ onMounted(() => {
   fs.mkdirTree(DICT_DIR)
   refreshDicts()
 })
+
+onUnmounted(() => {
+  clearTimeout(uploadTimer)
+})
 </script>
 
 <template>
@@ -203,6 +208,7 @@ onMounted(() => {
       </NButtonGroup>
       <NUpload
         ref="uploadRef"
+        v-model:file-list="fileList"
         multiple
         :accept="DICT_ACCEPTS"
         :show-file-list="false"
