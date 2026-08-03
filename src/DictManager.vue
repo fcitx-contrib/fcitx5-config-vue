@@ -199,7 +199,7 @@ onUnmounted(() => {
         </NPopconfirm>
         <NPopconfirm @positive-click="handleRemoveAll">
           <template #trigger>
-            <NButton type="error" size="small">
+            <NButton type="error" size="small" :disabled="dicts.length === 0">
               {{ t('Remove all') }}
             </NButton>
           </template>
