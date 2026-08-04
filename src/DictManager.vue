@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { TreeOption, UploadFileInfo, UploadInst } from 'naive-ui'
-import { NA, NButton, NCard, NFlex, NPopconfirm, NTree, NUpload, useMessage } from 'naive-ui'
+import type { TreeOption, UploadFileInfo } from 'naive-ui'
+import { NA, NButton, NCard, NFlex, NPopconfirm, NTree, NUpload, NUploadDragger, useMessage } from 'naive-ui'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { PINYIN } from './constant'
 import FileConverter from './FileConverter.vue'
@@ -22,9 +22,10 @@ const DICT_ACCEPTS = '.dict,.scel,.txt'
 const message = useMessage()
 const fs = window.fcitx.Module.FS
 
-const uploadRef = ref<UploadInst | null>(null)
+type DictManagerMode = 'list' | 'converter' | 'upload'
+
 const fileList = ref<UploadFileInfo[]>([])
-const useConverter = ref(false)
+const mode = ref<DictManagerMode>('list')
 
 const dicts = ref<Dict[]>([])
 const selectedKeys = ref<string[]>([])
@@ -93,6 +94,7 @@ function onUpload(files: UploadFileInfo[]) {
     message.info(t('Importing {total} dictionary(-ies): {success} suceess, {failure} failure', { total: success + failure, success, failure }))
     refreshDicts()
     fileList.value = []
+    mode.value = 'list'
   }, 300)
 }
 
@@ -170,10 +172,29 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <NFlex v-if="useConverter" vertical>
+  <NFlex v-if="mode === 'converter'" vertical>
     {{ t('Convert .dict to .txt') }}
     <FileConverter accept=".dict" :rename="(name: string) => name.replace(DICT_SUFFIX, '.txt')" :convert="decompileDict" />
-    <NButton size="small" @click="useConverter = false">
+    <NButton size="small" @click="mode = 'list'">
+      {{ t('Return') }}
+    </NButton>
+  </NFlex>
+
+  <NFlex v-else-if="mode === 'upload'" vertical>
+    {{ t('Import') }}
+    <NUpload
+      v-model:file-list="fileList"
+      multiple
+      :accept="DICT_ACCEPTS"
+      :show-file-list="false"
+      @update:file-list="onUpload"
+    >
+      <NUploadDragger>
+        {{ t('Click or drag to this area') }} <br>
+        {{ t('Accept format: {format}', { format: DICT_ACCEPTS }) }}
+      </NUploadDragger>
+    </NUpload>
+    <NButton size="small" @click="mode = 'list'">
       {{ t('Return') }}
     </NButton>
   </NFlex>
@@ -199,10 +220,10 @@ onUnmounted(() => {
       </NA>
     </NFlex>
     <NFlex vertical>
-      <NButton size="small" @click="uploadRef?.openOpenFileDialog()">
+      <NButton size="small" @click="mode = 'upload'">
         {{ t('Import') }}
       </NButton>
-      <NButton size="small" @click="useConverter = true">
+      <NButton size="small" @click="mode = 'converter'">
         {{ t('Convert') }}
       </NButton>
       <NPopconfirm @positive-click="handleRemove">
@@ -221,14 +242,6 @@ onUnmounted(() => {
         </template>
         {{ t('Are you sure to remove all dictionaries?') }}
       </NPopconfirm>
-      <NUpload
-        ref="uploadRef"
-        v-model:file-list="fileList"
-        multiple
-        :accept="DICT_ACCEPTS"
-        :show-file-list="false"
-        @update:file-list="onUpload"
-      />
     </NFlex>
   </NFlex>
 </template>
