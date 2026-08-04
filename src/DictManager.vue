@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { UploadFileInfo, UploadInst } from 'naive-ui'
-import { NA, NButton, NCheckbox, NFlex, NList, NListItem, NPopconfirm, NText, NUpload, useMessage } from 'naive-ui'
-import { onMounted, onUnmounted, ref } from 'vue'
+import type { TreeOption, UploadFileInfo, UploadInst } from 'naive-ui'
+import { NA, NButton, NCard, NFlex, NPopconfirm, NTree, NUpload, useMessage } from 'naive-ui'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { PINYIN } from './constant'
 import FileConverter from './FileConverter.vue'
 import { t } from './i18n'
@@ -27,7 +27,22 @@ const fileList = ref<UploadFileInfo[]>([])
 const useConverter = ref(false)
 
 const dicts = ref<Dict[]>([])
-const selectedDict = ref<Dict | null>(null)
+const selectedKeys = ref<string[]>([])
+const selectedDict = computed(() =>
+  dicts.value.find(dict => dict.id === selectedKeys.value[0]) ?? null)
+
+const treeData = computed<TreeOption[]>(() =>
+  dicts.value.map(dict => ({ key: dict.id, label: dict.id })))
+const checkedKeys = computed(() => dicts.value.filter(dict => dict.enabled).map(dict => dict.id))
+
+function handleUpdateCheckedKeys(_keys: (string | number)[], _options: (TreeOption | null)[], meta: { node: TreeOption | null, action: 'check' | 'uncheck' }) {
+  const id = meta.node?.key as string
+  handleDictChecked(id, meta.action === 'check')
+}
+
+function handleUpdateSelectedKeys(keys: string[]) {
+  selectedKeys.value = [...keys]
+}
 
 // Workaround naive-ui's behavior that batch upload n files calls onUpload n times.
 let uploadTimer: ReturnType<typeof setTimeout> | undefined
@@ -133,7 +148,7 @@ function handleRemove() {
   }
   removeDict(selectedDict.value)
   refreshDicts()
-  selectedDict.value = null
+  selectedKeys.value = []
 }
 
 function handleRemoveAll() {
@@ -141,7 +156,7 @@ function handleRemoveAll() {
     removeDict(dict)
   }
   refreshDicts()
-  selectedDict.value = null
+  selectedKeys.value = []
 }
 
 onMounted(() => {
@@ -165,19 +180,20 @@ onUnmounted(() => {
 
   <NFlex v-else>
     <NFlex vertical style="flex-grow: 1">
-      <NList bordered clickable :show-divider="false" style="flex-grow: 1">
-        <NListItem v-for="dict in dicts" :key="dict.id" @click="selectedDict = dict">
-          <template #prefix>
-            <NCheckbox
-              size="small" :checked="dict.enabled"
-              @update:checked="checked => handleDictChecked(dict.id, checked)"
-            />
-          </template>
-          <NText :type="selectedDict?.id === dict.id ? 'primary' : 'default'" :strong="selectedDict?.id === dict.id">
-            {{ dict.id }}
-          </NText>
-        </NListItem>
-      </NList>
+      <NCard>
+        <NTree
+          block-line
+          block-node
+          checkable
+          selectable
+          :data="treeData"
+          :checked-keys="checkedKeys"
+          :selected-keys="selectedKeys"
+          style="flex-grow: 1"
+          @update:checked-keys="handleUpdateCheckedKeys"
+          @update:selected-keys="handleUpdateSelectedKeys"
+        />
+      </NCard>
       <NA href="https://pinyin.sogou.com/dict/" target="_blank">
         {{ t('Browse Sogou Cell Dictionary online') }}
       </NA>
