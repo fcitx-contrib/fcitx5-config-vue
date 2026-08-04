@@ -38,13 +38,9 @@ function click() {
       break
     }
     case 'DictManager': {
-      const instance = dialog.info({
+      dialog.info({
         title: props.config.Description,
         content: () => h(DictManager),
-        negativeText: t('Close'),
-        onNegativeClick() {
-          instance.destroy()
-        },
       })
       break
     }
