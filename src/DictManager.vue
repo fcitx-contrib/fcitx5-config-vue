@@ -180,7 +180,7 @@ onUnmounted(() => {
 
   <NFlex v-else>
     <NFlex vertical style="flex-grow: 1">
-      <NCard>
+      <NCard style="height: 100%">
         <NTree
           block-line
           block-node
