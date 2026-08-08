@@ -29,6 +29,7 @@
   "Import": "导入",
   "Import data from …": "从…导入数据",
   "Importing {total} dictionary(-ies): {success} suceess, {failure} failure": "导入 {total} 个词典：{success} 个成功，{failure} 失败",
+  "Import succeeded": "导入成功",
   "Input Method": "输入法",
   "Installed": "已安装",
   "Installed {plugin}": "已安装 {plugin}",
