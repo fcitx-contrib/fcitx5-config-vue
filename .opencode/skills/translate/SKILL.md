@@ -83,7 +83,7 @@ The nested `language` block is the one dynamic key-space; keep it complete and i
 When adding a language not yet in `messages` (e.g. `vi`):
 
 1. Copy `src/locales/zh-CN.json` to `src/locales/<lang>.json`.
-2. Register it in `src/i18n.ts`:
+2. Register it in `src/i18n.ts`. Import each locale module under an identifier-safe binding of the locale code — the import path keeps the original code, but the local name must be a valid JS identifier (e.g. `zhTW` for `zh-TW`). Example for `vi`:
    ```ts
    import vi from './locales/vi.json'
    // ...
@@ -92,7 +92,7 @@ When adding a language not yet in `messages` (e.g. `vi`):
      "vi": vi,   // replaces the previous fallback line "vi": zhCN,
    }
    ```
-   In `messages`, replace the `"<lang>": zhCN,` fallback entry with the imported file for that key.
+   In `messages`, replace the `"<lang>": zhCN,` fallback entry with the imported file for that key, keeping the original locale code as the key (e.g. for `zh-TW`, `import zhTW from './locales/zh-TW.json'` and `"zh-TW": zhTW`).
 3. Translate every value, using the key (English) and the `zh-CN.json` value (Simplified Chinese) as context.
 
 ## Editing Rules

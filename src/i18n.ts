@@ -43,11 +43,12 @@ export function getLocale(messages: { [key: string]: any }) {
     if (language in messages) {
       return language
     }
-    if (language.startsWith('en')) {
-      return 'en'
-    }
     if (language === 'zh-SG') {
       return 'zh-CN'
+    }
+    const base = language.split('-')[0]
+    if (base in messages) {
+      return base
     }
   }
   return 'en'
