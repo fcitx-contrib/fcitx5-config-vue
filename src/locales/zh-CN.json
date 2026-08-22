@@ -33,6 +33,7 @@
   "Input Method": "输入法",
   "Installed": "已安装",
   "Installed {plugin}": "已安装 {plugin}",
+  "Invalid regular expression": "无效的正则表达式",
   "Invalid zip": "无效的 zip",
   "Keyword": "关键词",
   "Must install {plugin}": "必须安装 {plugin}",

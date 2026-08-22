@@ -33,6 +33,7 @@
   "Input Method": "입력기",
   "Installed": "설치됨",
   "Installed {plugin}": "{plugin} 이(가) 설치되었습니다",
+  "Invalid regular expression": "잘못된 정규식",
   "Invalid zip": "잘못된 zip",
   "Keyword": "키워드",
   "Must install {plugin}": "{plugin}을(를) 설치해야 합니다",

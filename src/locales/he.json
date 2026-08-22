@@ -33,6 +33,7 @@
   "Input Method": "שיטת קלט",
   "Installed": "מותקן",
   "Installed {plugin}": "{plugin} הותקן",
+  "Invalid regular expression": "ביטוי רגולרי לא חוקי",
   "Invalid zip": "קובץ zip לא תקין",
   "Keyword": "מילת מפתח",
   "Must install {plugin}": "יש להתקין את {plugin}",

@@ -33,6 +33,7 @@
   "Input Method": "Метод ввода",
   "Installed": "Установлено",
   "Installed {plugin}": "Установлен {plugin}",
+  "Invalid regular expression": "Недопустимое регулярное выражение",
   "Invalid zip": "Недопустимый zip-файл",
   "Keyword": "Ключевое слово",
   "Must install {plugin}": "Необходимо установить {plugin}",

@@ -33,6 +33,7 @@
   "Input Method": "შეტანის მეთოდი",
   "Installed": "დაყენებულია",
   "Installed {plugin}": "დაყენებულია {plugin}",
+  "Invalid regular expression": "არასწორი რეგულარული გამოხატულება",
   "Invalid zip": "არასწორი zip",
   "Keyword": "საკვანძო სიტყვა",
   "Must install {plugin}": "უნდა დააყენოთ {plugin}",
