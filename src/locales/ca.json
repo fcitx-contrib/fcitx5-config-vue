@@ -33,6 +33,7 @@
   "Input Method": "Mètode d'entrada",
   "Installed": "Instal·lat",
   "Installed {plugin}": "S'ha instal·lat {plugin}",
+  "Invalid regular expression": "Expressió regular no vàlida",
   "Invalid zip": "Zip no vàlid",
   "Keyword": "Paraula clau",
   "Must install {plugin}": "Heu d'instal·lar {plugin}",

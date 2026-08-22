@@ -33,6 +33,7 @@
   "Input Method": "Phương thức nhập",
   "Installed": "Đã cài đặt",
   "Installed {plugin}": "Đã cài đặt {plugin}",
+  "Invalid regular expression": "Biểu thức chính quy không hợp lệ",
   "Invalid zip": "Zip không hợp lệ",
   "Keyword": "Từ khóa",
   "Must install {plugin}": "Phải cài đặt {plugin}",

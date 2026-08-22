@@ -33,6 +33,7 @@
   "Input Method": "Método de entrada",
   "Installed": "Instalado",
   "Installed {plugin}": "{plugin} instalado",
+  "Invalid regular expression": "Expresión regular no válida",
   "Invalid zip": "Zip no válido",
   "Keyword": "Palabra clave",
   "Must install {plugin}": "Debes instalar {plugin}",

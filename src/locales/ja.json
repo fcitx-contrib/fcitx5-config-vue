@@ -33,6 +33,7 @@
   "Input Method": "入力方式",
   "Installed": "インストール済み",
   "Installed {plugin}": "{plugin} をインストールしました",
+  "Invalid regular expression": "正規表現が無効です",
   "Invalid zip": "無効な zip",
   "Keyword": "キーワード",
   "Must install {plugin}": "{plugin} をインストールする必要があります",

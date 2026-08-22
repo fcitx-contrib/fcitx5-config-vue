@@ -33,6 +33,7 @@
   "Input Method": "Indtastningsmetode",
   "Installed": "Installeret",
   "Installed {plugin}": "Installeret {plugin}",
+  "Invalid regular expression": "Ugyldigt regulært udtryk",
   "Invalid zip": "Ugyldig zip",
   "Keyword": "Nøgleord",
   "Must install {plugin}": "Du skal installere {plugin}",
