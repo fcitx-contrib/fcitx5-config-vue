@@ -19,20 +19,15 @@ function isRegexValid(value: string) {
 }
 
 const isValid = computed(() => {
-  const text = props.value ?? ''
-  return !isRegex(props.config) || text.length === 0 || isRegexValid(text)
+  const text = props.value
+  return !isRegex(props.config) || isRegexValid(text)
 })
 
 const inputValidationStatus = computed(() => {
   return isValid.value ? undefined : 'error'
 })
 
-const inputFeedback = computed(() => {
-  if (!isValid.value) {
-    return t('Invalid regular expression')
-  }
-  return undefined
-})
+const inputFeedback = computed(() => isValid.value ? undefined : t('Invalid regular expression'))
 </script>
 
 <template>
