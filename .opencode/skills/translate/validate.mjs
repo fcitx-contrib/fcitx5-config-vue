@@ -10,15 +10,17 @@ const a = JSON.parse(fs.readFileSync(base, 'utf8'))
 const b = JSON.parse(fs.readFileSync(target, 'utf8'))
 
 // Flatten a JSON locale object into dotted key paths, recursing into nested
-// objects (only the "language" block is nested in this project).
+// objects (only the "language" block is nested in this project). Returns a
+// Map of path -> isNested so flat sentence keys (which may contain '.') can be
+// told apart from nested paths like "language.Chinese".
 function flat(obj, pre = '') {
-  const res = new Set()
+  const res = new Map()
   for (const [k, v] of Object.entries(obj)) {
     const p = pre ? `${pre}.${k}` : k
     if (v !== null && typeof v === 'object') {
-      for (const x of flat(v, p)) res.add(x)
+      for (const [x, nested] of flat(v, p)) res.set(x, nested)
     } else {
-      res.add(p)
+      res.set(p, Boolean(pre))
     }
   }
   return res
@@ -29,8 +31,10 @@ function get(obj, path) {
   return path.split('.').reduce((o, k) => o?.[k], obj)
 }
 
-const ka = [...flat(a)].sort()
-const kb = [...flat(b)].sort()
+const fa = flat(a)
+const ka = [...fa.keys()].sort()
+const kb = [...flat(b).keys()].sort()
+const nested = new Set([...fa].filter(([, n]) => n).map(([k]) => k))
 
 let exit = false
 
@@ -50,15 +54,18 @@ const SAME_WORD = {
 }
 const locale = target.split('/').pop().replace(/\.json$/, '')
 const sameWord = SAME_WORD[locale] ?? []
-// A value that equals its leaf key means it is still the English placeholder.
+// A value that equals its English placeholder means it is still untranslated.
+// Flat keys use the whole key as their placeholder (sentences may contain '.');
+// nested keys such as "language.Chinese" use the leaf language name instead.
 const untranslated = ka.filter(k => {
   const v = get(b, k)
-  const leaf = k.split('.').pop()
-  return typeof v === 'string' && v === leaf && !sameWord.includes(leaf)
+  const placeholder = nested.has(k) ? k.split('.').pop() : k
+  return typeof v === 'string' && v === placeholder && !sameWord.includes(placeholder)
 })
 
-// Interpolation placeholders ({name}) must be preserved exactly in the
-// translation: same names with the same counts for every leaf in both locales.
+// Interpolation placeholders ({name}) must be preserved in the translation:
+// same names with the same counts for every leaf in both locales. Order is not
+// enforced — reordering to fit the target language is allowed.
 function placeholders(s) {
   const counts = new Map()
   for (const m of String(s).matchAll(/\{([^{}]+)\}/g)) {
