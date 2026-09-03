@@ -7,15 +7,21 @@
   "scripts": {
     "lint": "eslint",
     "lint:fix": "eslint --fix",
-    "check": "vue-tsc --noEmit",
-    "build": "vite build && vue-tsc -d --emitDeclarationOnly"
+    "check": "vue-tsc --noEmit && tsc --noEmit -p tsconfig.test.json",
+    "build": "vite build && vue-tsc -d --emitDeclarationOnly",
+    "preview": "serve -l 4173 -S ${FCITX5_ONLINE_DIR:-../fcitx5-online}/dist",
+    "test": "playwright test",
+    "test:chromium": "playwright test --project chromium"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^9.0.0",
+    "@playwright/test": "1.62.1",
+    "@types/node": "^26.2.0",
     "@vitejs/plugin-vue": "^6.0.7",
     "eslint": "^10.4.0",
     "fcitx5-js": "file:cache/fcitx5-js.tgz",
     "naive-ui": "^2.44.1",
+    "serve": "^14.2.6",
     "typescript": "6.0.3",
     "vite": "^8.0.14",
     "vooks": "^0.2.12",
