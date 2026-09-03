@@ -42,7 +42,7 @@ jobs:
 
       - name: Install test engine
         run: |
-          ln -s .. test-engine/fcitx5-config-vue
+          ln -s ../../../fcitx5-config-vue.tgz test-engine/fcitx5-online/cache/fcitx5-config-vue.tgz
           ln -s ../../../cache/fcitx5-js.tgz test-engine/fcitx5-online/cache/fcitx5-js.tgz
           pnpm --dir test-engine/fcitx5-online install
           pnpm exec playwright install --with-deps

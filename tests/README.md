@@ -1,19 +1,22 @@
 # Playwright tests
 
-The tests exercise this package through the real `fcitx5-online` WebAssembly configuration engine. They expect the two repositories to be siblings by default, so that `fcitx5-online`'s `link:../fcitx5-config-vue` dependency points at this checkout.
+The tests exercise this package through the real `fcitx5-online` WebAssembly configuration engine. They expect the two repositories to be siblings by default.
 
-Install dependencies in both repositories and install the Playwright browsers:
+Install this project's dependencies and the Playwright browsers:
 
 ```sh
 pnpm install
-pnpm --dir ../fcitx5-online install
 pnpm exec playwright install
 ```
 
-Both repositories need `cache/fcitx5-js.tgz`, as in their normal build setup. Build this package first, followed by the online test engine:
+Both repositories need `cache/fcitx5-js.tgz`, as in their normal build setup. Build and pack this package, link it into the online test engine's cache, then install and build the test engine:
 
 ```sh
 pnpm run build
+npm pack
+mv fcitx5-config-vue-*.tgz fcitx5-config-vue.tgz
+ln -sf ../../fcitx5-config-vue/fcitx5-config-vue.tgz ../fcitx5-online/cache/fcitx5-config-vue.tgz
+pnpm --dir ../fcitx5-online install
 pnpm --dir ../fcitx5-online run build
 ```
 
