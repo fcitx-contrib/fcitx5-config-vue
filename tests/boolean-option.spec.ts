@@ -1,11 +1,5 @@
 import { expect, test } from '@playwright/test'
-import {
-  expectSavedBooleanOption,
-  expectSwitchValue,
-  openGlobalConfig,
-  selectBooleanOption,
-  toggled,
-} from './util'
+import { expectSavedBooleanOption, expectSwitchValue, getRedo, getReset, getUndo, openGlobalConfig, selectBooleanOption, toggled } from './util'
 
 const HOTKEY = 'Hotkey'
 const ENUMERATE_WITH_TRIGGER_KEYS = 'EnumerateWithTriggerKeys'
@@ -17,8 +11,8 @@ test.describe('BooleanOption', () => {
   test('toggles, saves, undoes, and redoes a value', async ({ page }) => {
     const modal = await openGlobalConfig(page)
     const { state, switchControl } = await selectBooleanOption(page, modal, HOTKEY, ENUMERATE_WITH_TRIGGER_KEYS)
-    const undo = modal.getByRole('button', { name: 'Undo', exact: true })
-    const redo = modal.getByRole('button', { name: 'Redo', exact: true })
+    const undo = getUndo(modal)
+    const redo = getRedo(modal)
     const changedValue = toggled(state.value)
 
     await expectSwitchValue(switchControl, state.value)
@@ -55,7 +49,7 @@ test.describe('BooleanOption', () => {
     await expectSavedBooleanOption(page, BEHAVIOR, ACTIVE_BY_DEFAULT, toggled(state.defaultValue))
 
     await modal.getByText(state.description, { exact: true }).click({ button: 'right' })
-    await page.locator('.n-dropdown-menu').getByText('Reset to default', { exact: true }).click()
+    await getReset(page).click()
 
     await expectSwitchValue(switchControl, state.defaultValue)
     await expectSavedBooleanOption(page, BEHAVIOR, ACTIVE_BY_DEFAULT, state.defaultValue)
@@ -73,7 +67,7 @@ test.describe('BooleanOption', () => {
       await expectSwitchValue(item.switchControl, toggled(item.state.defaultValue))
     }
 
-    await modal.getByRole('button', { name: 'Reset to default', exact: true }).click()
+    await getReset(modal, 'button').click()
 
     await expectSwitchValue(active.switchControl, active.state.defaultValue)
     await expectSwitchValue(preedit.switchControl, preedit.state.defaultValue)
