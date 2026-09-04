@@ -39,6 +39,7 @@ const inputFeedback = computed(() => isValid.value ? undefined : t('Invalid regu
   >
     <NInput
       :value="value"
+      :input-props="{ 'aria-label': config.Description }"
       @update:value="onUpdate"
     />
   </NFormItem>
