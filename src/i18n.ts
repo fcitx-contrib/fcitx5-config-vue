@@ -9,6 +9,7 @@ import ja from './locales/ja.json'
 import ka from './locales/ka.json'
 import ko from './locales/ko.json'
 import ru from './locales/ru.json'
+import sv from './locales/sv.json'
 import vi from './locales/vi.json'
 import zhCN from './locales/zh-CN.json'
 import zhTW from './locales/zh-TW.json'
@@ -33,6 +34,7 @@ const messages: Record<string, any> = {
   'ka': ka,
   'ko': ko,
   'ru': ru,
+  'sv': sv,
   'vi': vi,
   'zh-CN': zhCN,
   'zh-TW': zhTW,
