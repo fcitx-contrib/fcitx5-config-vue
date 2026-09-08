@@ -18,6 +18,7 @@ function getInstalledPlugins() {
 
 const plugins: [string, string][] = [
   ['anthy', 'Japanese'],
+  ['bamboo', 'Vietnamese'],
   ['chewing', 'Chinese'],
   ['chinese-addons', 'Chinese'],
   ['cskk', 'Japanese'],
