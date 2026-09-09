@@ -3,4 +3,5 @@ node_modules
 dist
 pnpm-lock.yaml
 *.tgz
+*.zip
 test-results
