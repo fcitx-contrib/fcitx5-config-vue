@@ -7,6 +7,7 @@ import { toComponent } from '../util'
 
 const props = defineProps<{
   config: {
+    Description: string
     Type: string
   }
   value: { [key: string]: string }
@@ -44,7 +45,7 @@ function add(index: number) {
 </script>
 
 <template>
-  <NList style="width: 100%; padding: 0 12px">
+  <NList role="list" :aria-label="config.Description" style="width: 100%; padding: 0 12px">
     <NListItem
       v-for="[i, item] of Object.entries(value)"
       :key="i"
@@ -58,15 +59,18 @@ function add(index: number) {
       <template #suffix>
         <NButtonGroup>
           <UpButton
+            :aria-label="`Move item ${Number(i) + 1} up`"
             :disabled="Number(i) === 0"
             size="small"
             @click="move(Number(i))"
           />
           <MinusButton
+            :aria-label="`Remove item ${Number(i) + 1}`"
             size="small"
             @click="remove(Number(i))"
           />
           <PlusButton
+            :aria-label="`Insert item before ${Number(i) + 1}`"
             size="small"
             @click="add(Number(i))"
           />
@@ -77,6 +81,7 @@ function add(index: number) {
       <div style="width: 100%" />
       <template #suffix>
         <PlusButton
+          aria-label="Add item"
           size="small"
           @click="add(Object.keys(value).length)"
         />
