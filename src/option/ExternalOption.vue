@@ -23,7 +23,23 @@ const props = defineProps<{
 const dialog = useDialog()
 const manager = computed(() => new ConfigManager(props.config.External))
 
+function openQuickPhrase() {
+  const instance = dialog.info({
+    title: props.config.Description,
+    content: () => h(QuickPhrase, {
+      onClose: () => instance.destroy(),
+    }),
+    style: isMobile.value ? { 'width': '100vw', 'max-width': 'min(100vw, 600px)' } : { width: '600px' },
+  })
+}
+
 function click() {
+  // Its Option is different in Pinyin and QuickPhrase, so use External as source of truth.
+  if (props.config.External === 'fcitx://config/addon/quickphrase/editor') {
+    openQuickPhrase()
+    return
+  }
+
   switch (props.config.Option) {
     case 'CustomPhrase': {
       const instance = dialog.info({
@@ -41,16 +57,6 @@ function click() {
       dialog.info({
         title: props.config.Description,
         content: () => h(DictManager),
-      })
-      break
-    }
-    case 'QuickPhrase': {
-      const instance = dialog.info({
-        title: props.config.Description,
-        content: () => h(QuickPhrase, {
-          onClose: () => instance.destroy(),
-        }),
-        style: isMobile.value ? { 'width': '100vw', 'max-width': 'min(100vw, 600px)' } : { width: '600px' },
       })
       break
     }
