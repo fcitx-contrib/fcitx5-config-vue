@@ -7,6 +7,7 @@ const props = defineProps<{
   value: string
   editing: boolean
   autoFocus: boolean
+  onEdit: () => void
   onUpdateValue: (value: string) => void
 }>()
 
@@ -16,8 +17,8 @@ const inputRef = ref<InputInst | null>(null)
 const inputValue = ref(props.value)
 
 watchEffect(() => {
+  isEdit.value = props.editing
   if (props.editing) {
-    isEdit.value = true
     if (props.autoFocus) {
       nextTick(() => {
         inputRef.value?.focus()
@@ -27,6 +28,7 @@ watchEffect(() => {
 })
 
 function handleClick() {
+  props.onEdit()
   isEdit.value = true
   nextTick(() => {
     inputRef.value?.focus()

@@ -19,6 +19,8 @@ interface QuickPhrase {
   phrase: string
 }
 
+type QuickPhraseField = 'keyword' | 'phrase'
+
 function getMBFiles(dir: string): string[] {
   try {
     return window.fcitx.lsDir(dir).filter(f => f.endsWith('.mb')).map(f => f.slice(0, -3))
@@ -88,13 +90,21 @@ watchEffect(() => readQuickPhrases(selection.value))
 const pageSlot = computed(() => breakpoint.value === 'xs' ? 6 : 9)
 
 const checkedRowKeys = ref<string[]>([])
-const editingIndex = ref<string | null>(null)
+const editingCell = ref<{ id: string, field: QuickPhraseField } | null>(null)
 const page = ref(1)
+
+function editCell(id: string, field: QuickPhraseField) {
+  editingCell.value = { id, field }
+}
+
+function isEditing(id: string, field: QuickPhraseField) {
+  return editingCell.value?.id === id && editingCell.value.field === field
+}
 
 function addItem() {
   const id = crypto.randomUUID()
   content.value.push({ id, keyword: '', phrase: '' })
-  editingIndex.value = id
+  editCell(id, 'keyword')
   page.value = Math.ceil(content.value.length / pageSlot.value)
 }
 
@@ -153,8 +163,11 @@ const columns: DataTableColumns<QuickPhrase> = [
     render(row: QuickPhrase) {
       return h(ShowOrEdit, {
         value: row.keyword,
-        editing: editingIndex.value === row.id,
+        editing: isEditing(row.id, 'keyword'),
         autoFocus: true,
+        onEdit() {
+          editCell(row.id, 'keyword')
+        },
         onUpdateValue(v: string) {
           content.value.find(item => item.id === row.id)!.keyword = v
         },
@@ -167,8 +180,11 @@ const columns: DataTableColumns<QuickPhrase> = [
     render(row: QuickPhrase) {
       return h(ShowOrEdit, {
         value: row.phrase,
-        editing: false,
+        editing: isEditing(row.id, 'phrase'),
         autoFocus: false,
+        onEdit() {
+          editCell(row.id, 'phrase')
+        },
         onUpdateValue(v: string) {
           content.value.find(item => item.id === row.id)!.phrase = v
         },
