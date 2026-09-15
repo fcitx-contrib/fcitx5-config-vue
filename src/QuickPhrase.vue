@@ -34,11 +34,12 @@ function getUserFiles() {
   return getMBFiles(QUICKPHRASE_DIR)
 }
 
-function getDisabledFiles(): string[] {
+function getDisabledFiles(builtinNames: ReadonlySet<string>): string[] {
   try {
     return window.fcitx.lsDir(QUICKPHRASE_DIR)
       .filter(f => f.endsWith('.mb.disable'))
       .map(f => f.slice(0, -11))
+      .filter(f => builtinNames.has(f))
   }
   catch {
     return []
@@ -70,7 +71,7 @@ function parseContent(s: string): QuickPhrase[] {
 const userFiles = ref(getUserFiles())
 const systemFiles = getMBFiles(QUICKPHRASE_SYSTEM_DIR)
 const systemFileSet = new Set(systemFiles)
-const disabledFiles = ref(getDisabledFiles())
+const disabledFiles = ref(getDisabledFiles(systemFileSet))
 const options = computed(() => [...systemFiles, ...userFiles.value.filter(f => !systemFileSet.has(f))].map(f => ({
   label: f,
   value: f,
@@ -149,7 +150,7 @@ function toggleOrRemove() {
       window.fcitx.Module.FS.unlink(disabledPath)
     else
       writeFile(disabledPath, '')
-    disabledFiles.value = getDisabledFiles()
+    disabledFiles.value = getDisabledFiles(systemFileSet)
   }
   else {
     window.fcitx.Module.FS.unlink(userPath)

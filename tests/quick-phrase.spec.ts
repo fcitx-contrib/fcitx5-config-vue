@@ -91,6 +91,27 @@ test('uses built-in quick phrase files and toggles disable markers', async ({ pa
   expect(await readFile(page, disabledPath)).toBeNull()
 })
 
+test('ignores disable markers for user-only quick phrase files', async ({ page }) => {
+  await initializeApp(page)
+  await page.evaluate(({ directory, path }) => {
+    window.fcitx.Module.FS.mkdirTree(directory)
+    window.fcitx.Module.FS.writeFile(path, 'custom-keyword custom phrase\n')
+    window.fcitx.Module.FS.writeFile(`${path}.disable`, '')
+  }, {
+    directory: QUICK_PHRASE_DIR,
+    path: `${QUICK_PHRASE_DIR}custom.mb`,
+  })
+
+  const dialog = await openQuickPhrase(page)
+  await selectQuickPhrase(page, dialog, 'custom')
+
+  await expect(dialog.getByRole('button', { name: 'Add item', exact: true })).toBeEnabled()
+  await expect(dialog.getByRole('button', { name: 'Save', exact: true })).toBeEnabled()
+  await expect(dialog.getByRole('button', { name: 'Remove', exact: true })).toBeEnabled()
+  await dialog.locator('.n-data-table-tbody').getByRole('checkbox').check()
+  await expect(dialog.getByRole('button', { name: 'Remove items', exact: true })).toBeEnabled()
+})
+
 test('only edits one quick phrase cell at a time', async ({ page }) => {
   await initializeApp(page)
   await page.evaluate(({ directory, path }) => {
