@@ -34,6 +34,18 @@ function getUserFiles() {
   return getMBFiles(QUICKPHRASE_DIR)
 }
 
+function getDisabledFiles(builtinNames: ReadonlySet<string>): string[] {
+  try {
+    return window.fcitx.lsDir(QUICKPHRASE_DIR)
+      .filter(f => f.endsWith('.mb.disable'))
+      .map(f => f.slice(0, -11))
+      .filter(f => builtinNames.has(f))
+  }
+  catch {
+    return []
+  }
+}
+
 function writeFile(path: string, content: string) {
   window.fcitx.Module.FS.mkdirTree(path.substring(0, path.lastIndexOf('/')))
   window.fcitx.Module.FS.writeFile(path, content)
@@ -58,11 +70,16 @@ function parseContent(s: string): QuickPhrase[] {
 
 const userFiles = ref(getUserFiles())
 const systemFiles = getMBFiles(QUICKPHRASE_SYSTEM_DIR)
-const options = computed(() => [...userFiles.value, ...systemFiles.filter(f => !userFiles.value.includes(f))].map(f => ({
+const systemFileSet = new Set(systemFiles)
+const disabledFiles = ref(getDisabledFiles(systemFileSet))
+const options = computed(() => [...systemFiles, ...userFiles.value.filter(f => !systemFileSet.has(f))].map(f => ({
   label: f,
   value: f,
 })))
 const selection = ref(options.value[0]?.value ?? '')
+const isBuiltin = computed(() => systemFileSet.has(selection.value))
+const isDisabled = computed(() => disabledFiles.value.includes(selection.value))
+const isEditable = computed(() => !!selection.value && !isBuiltin.value && !isDisabled.value)
 
 const content = ref<QuickPhrase[]>([])
 const showNewFile = ref(false)
@@ -74,13 +91,13 @@ const isNewFileNameValid = computed(() => {
     return false
   if (name === '.' || name === '..')
     return false
-  return true
+  return !options.value.some(option => option.value === name)
 })
 
 function readQuickPhrases(name: string) {
   const userPath = `${QUICKPHRASE_DIR}${name}.mb`
   const systemPath = `${QUICKPHRASE_SYSTEM_DIR}${name}.mb`
-  const path = userFiles.value.includes(name) ? userPath : systemPath
+  const path = systemFileSet.has(name) ? systemPath : userPath
   const raw = window.fcitx.Module.FS.readFile(path, { encoding: 'utf8' })
   content.value = parseContent(raw)
 }
@@ -125,21 +142,29 @@ function removeItems() {
   checkedRowKeys.value = []
 }
 
-function remove() {
+function toggleOrRemove() {
   const userPath = `${QUICKPHRASE_DIR}${selection.value}.mb`
-  if (userFiles.value.includes(selection.value)) {
-    window.fcitx.Module.FS.unlink(userPath)
-    userFiles.value = getUserFiles()
-    selection.value = options.value[0].value
+  if (isBuiltin.value) {
+    const disabledPath = `${userPath}.disable`
+    if (isDisabled.value)
+      window.fcitx.Module.FS.unlink(disabledPath)
+    else
+      writeFile(disabledPath, '')
+    disabledFiles.value = getDisabledFiles(systemFileSet)
   }
   else {
-    // Write an empty file to user directory to override system's.
-    writeFile(userPath, '')
+    window.fcitx.Module.FS.unlink(userPath)
     userFiles.value = getUserFiles()
-    readQuickPhrases(selection.value)
+    selection.value = options.value[0]?.value ?? ''
   }
   reloadQuickPhrase()
 }
+
+const toggleOrRemoveLabel = computed(() => {
+  if (!isBuiltin.value)
+    return t('Remove')
+  return isDisabled.value ? t('Enable') : t('Disable')
+})
 
 function createFile() {
   writeFile(`${QUICKPHRASE_DIR}${newFileName.value}.mb`, '')
@@ -155,12 +180,14 @@ function cancelNewFile() {
 }
 
 const columns: DataTableColumns<QuickPhrase> = [
-  { type: 'selection' },
+  { type: 'selection', disabled: () => !isEditable.value },
   {
     title: t('Keyword'),
     key: 'keyword',
     width: '60%',
     render(row: QuickPhrase) {
+      if (isBuiltin.value)
+        return h('span', { style: { color: isDisabled.value ? 'gray' : undefined } }, row.keyword)
       return h(ShowOrEdit, {
         value: row.keyword,
         editing: isEditing(row.id, 'keyword'),
@@ -178,6 +205,8 @@ const columns: DataTableColumns<QuickPhrase> = [
     title: t('Phrase'),
     key: 'phrase',
     render(row: QuickPhrase) {
+      if (isBuiltin.value)
+        return h('span', { style: { color: isDisabled.value ? 'gray' : undefined } }, row.phrase)
       return h(ShowOrEdit, {
         value: row.phrase,
         editing: isEditing(row.id, 'phrase'),
@@ -219,16 +248,16 @@ const columns: DataTableColumns<QuickPhrase> = [
         <NButton secondary @click="showNewFile = true">
           {{ t('New file') }}
         </NButton>
-        <NButton secondary @click="addItem">
+        <NButton secondary :disabled="!isEditable" @click="addItem">
           {{ t('Add item') }}
         </NButton>
-        <NButton secondary :disabled="checkedRowKeys.length === 0" @click="removeItems">
+        <NButton secondary :disabled="checkedRowKeys.length === 0 || !isEditable" @click="removeItems">
           {{ t('Remove items') }}
         </NButton>
-        <NButton secondary type="error" @click="remove">
-          {{ t('Remove') }}
+        <NButton secondary type="error" @click="toggleOrRemove">
+          {{ toggleOrRemoveLabel }}
         </NButton>
-        <NButton secondary type="info" @click="save">
+        <NButton secondary type="info" :disabled="!isEditable" @click="save">
           {{ t('Save') }}
         </NButton>
       </template>
