@@ -17,7 +17,9 @@ import zhTW from './locales/zh-TW.json'
 function replaceLeaves(object: Record<string, any>): Record<string, any> {
   const result: Record<string, any> = {}
   for (const [key, value] of Object.entries(object)) {
-    result[key] = typeof value === 'object' ? replaceLeaves(value) : key
+    result[key] = typeof value === 'object'
+      ? replaceLeaves(value)
+      : key
   }
   return result
 }

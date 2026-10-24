@@ -10,7 +10,9 @@ test.describe('StringOption', () => {
     const { state, input } = await selectStringOption(page, modal, CARET, TEXT)
     const undo = getUndo(modal)
     const redo = getRedo(modal)
-    const changedValue = state.value === '.' ? 'x' : '.'
+    const changedValue = state.value === '.'
+      ? 'x'
+      : '.'
 
     await expect(input).toHaveValue(state.value)
     await expect(undo).toBeDisabled()
@@ -63,7 +65,9 @@ test.describe('StringOption', () => {
   test('resets one value from its context menu', async ({ page }) => {
     const modal = await openThemeConfig(page)
     const { state, input } = await selectStringOption(page, modal, CARET, TEXT)
-    const changedValue = state.defaultValue === '.' ? 'x' : '.'
+    const changedValue = state.defaultValue === '.'
+      ? 'x'
+      : '.'
 
     await input.fill(changedValue)
     await expectSavedStringOption(page, CARET, TEXT, changedValue)

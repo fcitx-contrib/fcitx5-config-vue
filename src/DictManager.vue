@@ -135,7 +135,9 @@ function decompileScel(src: string, dst: string) {
 
 function removeDict(dict: Dict) {
   const base = `${DICT_DIR}/${dict.id}.dict`
-  const path = dict.enabled ? base : `${base}.disable`
+  const path = dict.enabled
+    ? base
+    : `${base}.disable`
   try {
     fs.unlink(path)
   }

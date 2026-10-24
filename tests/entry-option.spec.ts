@@ -39,19 +39,28 @@ test.describe('EntryOption', () => {
     // competes with the outer config modal. Dispatch input on the intended
     // field so this test remains scoped to EntryOption behavior.
     await inputValue(mapping, 'X')
-    await expectSavedConfigValue(page, PUNCTUATION_URI, ['Entries'], { ...state.Value, 0: { ...state.Value[0], Mapping: 'X' } })
+    await expectSavedConfigValue(page, PUNCTUATION_URI, ['Entries'], {
+      ...state.Value,
+      0: { ...state.Value[0], Mapping: 'X' },
+    })
     await undo.evaluate((button: HTMLButtonElement) => button.click())
     await expect(mapping).toHaveValue(state.Value[0].Mapping)
     await expectSavedConfigValue(page, PUNCTUATION_URI, ['Entries'], state.Value)
 
     await inputValue(alternative, 'Y')
-    await expectSavedConfigValue(page, PUNCTUATION_URI, ['Entries'], { ...state.Value, 0: { ...state.Value[0], AltMapping: 'Y' } })
+    await expectSavedConfigValue(page, PUNCTUATION_URI, ['Entries'], {
+      ...state.Value,
+      0: { ...state.Value[0], AltMapping: 'Y' },
+    })
     await undo.evaluate((button: HTMLButtonElement) => button.click())
     await expect(alternative).toHaveValue(state.Value[0].AltMapping)
     await expectSavedConfigValue(page, PUNCTUATION_URI, ['Entries'], state.Value)
 
     await inputValue(key, '*')
-    await expectSavedConfigValue(page, PUNCTUATION_URI, ['Entries'], { ...state.Value, 0: { ...state.Value[0], Key: '*' } })
+    await expectSavedConfigValue(page, PUNCTUATION_URI, ['Entries'], {
+      ...state.Value,
+      0: { ...state.Value[0], Key: '*' },
+    })
 
     await dialog.getByText(state.Description!, { exact: true }).dispatchEvent('contextmenu', { button: 2, clientX: 1, clientY: 1 })
     await getReset(page).evaluate((item: HTMLElement) => item.click())

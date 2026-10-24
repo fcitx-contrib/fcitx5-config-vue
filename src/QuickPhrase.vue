@@ -62,7 +62,11 @@ function parseContent(s: string): QuickPhrase[] {
   for (const line of s.split('\n')) {
     const match = lineRegex.exec(line)
     if (match) {
-      result.push({ id: crypto.randomUUID(), keyword: match[1], phrase: match[2] })
+      result.push({
+        id: crypto.randomUUID(),
+        keyword: match[1],
+        phrase: match[2],
+      })
     }
   }
   return result
@@ -72,7 +76,10 @@ const userFiles = ref(getUserFiles())
 const systemFiles = getMBFiles(QUICKPHRASE_SYSTEM_DIR)
 const systemFileSet = new Set(systemFiles)
 const disabledFiles = ref(getDisabledFiles(systemFileSet))
-const options = computed(() => [...systemFiles, ...userFiles.value.filter(f => !systemFileSet.has(f))].map(f => ({
+const options = computed(() => [
+  ...systemFiles,
+  ...userFiles.value.filter(f => !systemFileSet.has(f)),
+].map(f => ({
   label: f,
   value: f,
 })))
@@ -97,14 +104,18 @@ const isNewFileNameValid = computed(() => {
 function readQuickPhrases(name: string) {
   const userPath = `${QUICKPHRASE_DIR}${name}.mb`
   const systemPath = `${QUICKPHRASE_SYSTEM_DIR}${name}.mb`
-  const path = systemFileSet.has(name) ? systemPath : userPath
+  const path = systemFileSet.has(name)
+    ? systemPath
+    : userPath
   const raw = window.fcitx.Module.FS.readFile(path, { encoding: 'utf8' })
   content.value = parseContent(raw)
 }
 
 watchEffect(() => readQuickPhrases(selection.value))
 
-const pageSlot = computed(() => breakpoint.value === 'xs' ? 6 : 9)
+const pageSlot = computed(() => breakpoint.value === 'xs'
+  ? 6
+  : 9)
 
 const checkedRowKeys = ref<string[]>([])
 const editingCell = ref<{ id: string, field: QuickPhraseField } | null>(null)
@@ -163,7 +174,9 @@ function toggleOrRemove() {
 const toggleOrRemoveLabel = computed(() => {
   if (!isBuiltin.value)
     return t('Remove')
-  return isDisabled.value ? t('Enable') : t('Disable')
+  return isDisabled.value
+    ? t('Enable')
+    : t('Disable')
 })
 
 function createFile() {
@@ -180,14 +193,22 @@ function cancelNewFile() {
 }
 
 const columns: DataTableColumns<QuickPhrase> = [
-  { type: 'selection', disabled: () => !isEditable.value },
+  {
+    type: 'selection',
+    disabled: () => !isEditable.value,
+  },
   {
     title: t('Keyword'),
     key: 'keyword',
     width: '60%',
     render(row: QuickPhrase) {
-      if (isBuiltin.value)
-        return h('span', { style: { color: isDisabled.value ? 'gray' : undefined } }, row.keyword)
+      if (isBuiltin.value) {
+        return h('span', {
+          style: {
+            color: isDisabled.value ? 'gray' : undefined,
+          },
+        }, row.keyword)
+      }
       return h(ShowOrEdit, {
         value: row.keyword,
         editing: isEditing(row.id, 'keyword'),
@@ -205,8 +226,13 @@ const columns: DataTableColumns<QuickPhrase> = [
     title: t('Phrase'),
     key: 'phrase',
     render(row: QuickPhrase) {
-      if (isBuiltin.value)
-        return h('span', { style: { color: isDisabled.value ? 'gray' : undefined } }, row.phrase)
+      if (isBuiltin.value) {
+        return h('span', {
+          style: {
+            color: isDisabled.value ? 'gray' : undefined,
+          },
+        }, row.phrase)
+      }
       return h(ShowOrEdit, {
         value: row.phrase,
         editing: isEditing(row.id, 'phrase'),

@@ -27,7 +27,9 @@ const inputValidationStatus = computed(() => {
   return isValid.value ? undefined : 'error'
 })
 
-const inputFeedback = computed(() => isValid.value ? undefined : t('Invalid regular expression'))
+const inputFeedback = computed(() => isValid.value
+  ? undefined
+  : t('Invalid regular expression'))
 </script>
 
 <template>

@@ -105,7 +105,12 @@ export function openAdvancedConfig(page: Page) {
 export async function enableInputMethods(page: Page, inputMethods: string[]) {
   await page.evaluate((inputMethods) => {
     const enabled = window.fcitx.getInputMethods().map(inputMethod => inputMethod.name)
-    const updated = [...new Set([...enabled, ...inputMethods])]
+    const updated = [
+      ...new Set([
+        ...enabled,
+        ...inputMethods,
+      ]),
+    ]
     if (updated.length !== enabled.length) {
       window.fcitx.setInputMethods(updated)
       window.fcitx.updateInputMethods()
@@ -275,11 +280,15 @@ export function expectEnumValue(select: Locator, label: string) {
 }
 
 export function toggled(value: string) {
-  return value === 'True' ? 'False' : 'True'
+  return value === 'True'
+    ? 'False'
+    : 'True'
 }
 
 export function expectSwitchValue(switchControl: Locator, value: string) {
-  return expect(switchControl).toHaveAttribute('aria-checked', value === 'True' ? 'true' : 'false')
+  return expect(switchControl).toHaveAttribute('aria-checked', value === 'True'
+    ? 'true'
+    : 'false')
 }
 
 export async function readBooleanOption(page: Page, groupOption: string, option: string) {

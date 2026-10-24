@@ -16,7 +16,12 @@ const props = defineProps<{
 const showContextMenu = ref(false)
 const x = ref(0)
 const y = ref(0)
-const options = [{ label: t('Reset to default'), key: 'reset' }]
+const options = [
+  {
+    label: t('Reset to default'),
+    key: 'reset',
+  },
+]
 
 let selectedChild: Config | null = null
 let selectedOption = ''
@@ -58,7 +63,10 @@ function onTouchEnd() {
 }
 
 function reset() {
-  props.onUpdate({ ...props.value, [selectedOption]: extractValue(selectedChild!, true) })
+  props.onUpdate({
+    ...props.value,
+    [selectedOption]: extractValue(selectedChild!, true),
+  })
 }
 </script>
 

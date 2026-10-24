@@ -43,7 +43,15 @@ const emit = defineEmits<{
 }>()
 
 const EN = 'en'
-const popularIMs = ['keyboard-us', 'pinyin', 'shuangpin', 'wbx', 'rime', 'mozc', 'hallelujah']
+const popularIMs = [
+  'keyboard-us',
+  'pinyin',
+  'shuangpin',
+  'wbx',
+  'rime',
+  'mozc',
+  'hallelujah',
+]
 
 const enabledIMs = computed(() => props.inputMethods.map(({ name }) => name))
 

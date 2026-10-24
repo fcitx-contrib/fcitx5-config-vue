@@ -15,7 +15,10 @@ const emit = defineEmits<{
   updateTitle: [string]
 }>()
 
-const options = { Children: [], ...window.fcitx.getConfig(props.uri) }.Children.map((child, i) => ({
+const options = {
+  Children: [],
+  ...window.fcitx.getConfig(props.uri),
+}.Children.map((child, i) => ({
   key: i,
   label: child.Description,
 }))

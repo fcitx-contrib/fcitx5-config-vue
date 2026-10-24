@@ -23,16 +23,23 @@ const options = window.fcitx.getAddons().map(category => ({
   })),
 }))
 
-const menuOptions = [{
-  key: 'data',
-  label: t('Data manager'),
-}, ...options]
+const menuOptions = [
+  {
+    key: 'data',
+    label: t('Data manager'),
+  },
+  ...options,
+]
 
 const selectedItem = ref('data')
 
-const addonNameMap = options.flatMap(option => option.children).reduce<Record<string, string>>((acc, value) => ({ ...acc, [value.key]: value.label }), { data: t('Data manager') })
+const addonNameMap = options.flatMap(option => option.children).reduce<Record<string, string>>((acc, value) => ({ ...acc, [value.key]: value.label }), {
+  data: t('Data manager'),
+})
 
-const addon = computed(() => selectedItem.value === 'data' ? options[0].children[0].key : selectedItem.value)
+const addon = computed(() => selectedItem.value === 'data'
+  ? options[0].children[0].key
+  : selectedItem.value)
 
 const manager = computed(() => new ConfigManager(`fcitx://config/addon/${addon.value}`))
 

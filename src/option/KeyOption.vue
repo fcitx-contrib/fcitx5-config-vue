@@ -14,7 +14,9 @@ const recording = ref(false)
 const pressed = ref(false)
 const label = computed(() => recording.value && !pressed.value
   ? '●'
-  : props.value ? window.fcitx.fcitxStringToLocalizedString(props.value) : '●REC')
+  : props.value
+    ? window.fcitx.fcitxStringToLocalizedString(props.value)
+    : '●REC')
 
 function keydown(e: KeyboardEvent) {
   if (!recording.value) {

@@ -29,7 +29,9 @@ function openQuickPhrase() {
     content: () => h(QuickPhrase, {
       onClose: () => instance.destroy(),
     }),
-    style: isMobile.value ? { 'width': '100vw', 'max-width': 'min(100vw, 600px)' } : { width: '600px' },
+    style: isMobile.value
+      ? { 'width': '100vw', 'max-width': 'min(100vw, 600px)' }
+      : { width: '600px' },
   })
 }
 

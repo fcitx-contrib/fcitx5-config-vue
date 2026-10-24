@@ -30,9 +30,15 @@ test.describe('GroupOption', () => {
     await modal.getByText(group.Description!, { exact: true }).click({ button: 'right' })
     await getReset(page).click()
 
-    await expect(outsideSwitch).toHaveAttribute('aria-checked', toggled(outside.Value) === 'True' ? 'true' : 'false')
-    await expect(firstSwitch).toHaveAttribute('aria-checked', first.DefaultValue === 'True' ? 'true' : 'false')
-    await expect(secondSwitch).toHaveAttribute('aria-checked', second.DefaultValue === 'True' ? 'true' : 'false')
+    await expect(outsideSwitch).toHaveAttribute('aria-checked', toggled(outside.Value) === 'True'
+      ? 'true'
+      : 'false')
+    await expect(firstSwitch).toHaveAttribute('aria-checked', first.DefaultValue === 'True'
+      ? 'true'
+      : 'false')
+    await expect(secondSwitch).toHaveAttribute('aria-checked', second.DefaultValue === 'True'
+      ? 'true'
+      : 'false')
     await expectSavedConfigValue(page, URI, ['VAsQuickphrase'], toggled(outside.Value))
     await expectSavedConfigValue(page, URI, ['Fuzzy', 'VE_UE'], first.DefaultValue)
     await expectSavedConfigValue(page, URI, ['Fuzzy', 'NG_GN'], second.DefaultValue)

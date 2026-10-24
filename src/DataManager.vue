@@ -12,13 +12,16 @@ type UZIPFiles = Record<string, Uint8Array>
 const dialog = useDialog()
 const message = useMessage()
 
-const fcitx5Prefixes = [{
-  srcPrefix: 'external/config/',
-  dstPrefix: CONFIG,
-}, {
-  srcPrefix: 'external/data/',
-  dstPrefix: SHARE,
-}]
+const fcitx5Prefixes = [
+  {
+    srcPrefix: 'external/config/',
+    dstPrefix: CONFIG,
+  },
+  {
+    srcPrefix: 'external/data/',
+    dstPrefix: SHARE,
+  },
+]
 const hamsterRimeDir = 'HamsterBackup/RIME/Rime/'
 const meta = 'metadata.json'
 const ISO_MILLIS_SUFFIX = /\.\d{3}Z$/
@@ -54,10 +57,12 @@ const backups = {
     validate: (manifest: UZIPFiles) => {
       return hamsterRimeDir in manifest
     },
-    extract: (manifest: UZIPFiles) => distribute(manifest, [{
-      srcPrefix: hamsterRimeDir,
-      dstPrefix: RIME,
-    }]),
+    extract: (manifest: UZIPFiles) => distribute(manifest, [
+      {
+        srcPrefix: hamsterRimeDir,
+        dstPrefix: RIME,
+      },
+    ]),
   },
 }
 
@@ -75,21 +80,30 @@ function importData(source: 'fcitx5' | 'hamster') {
       'accept': '.zip',
       'fileList': fileList.value,
       'onUpdate:fileList': onUpload,
-    }, () => h(NUploadDragger, isMobile.value ? {} : { style: { height: '200px' } }, () => t(isMobile.value ? 'Click this area' : 'Click or drag to this area'))),
-    action: () => h(NButton, { type: 'info', secondary: true, disabled: fileList.value.length === 0, onClick: async () => {
-      const file = fileList.value[0]
-      fileList.value = []
-      const arrayBuffer = await file.file?.arrayBuffer()
-      const manifest = window.fcitx.UZIP.parse(arrayBuffer!)
-      if (!backup.validate(manifest)) {
-        message.error(t('Invalid zip'))
-        return
-      }
-      backup.extract(manifest)
-      window.fcitx.reload()
-      instance.destroy()
-      message.success(t('Import succeeded'))
-    } }, () => t('OK')),
+    }, () => h(NUploadDragger, isMobile.value
+      ? {}
+      : {
+          style: { height: '200px' },
+        }, () => t(isMobile.value ? 'Click this area' : 'Click or drag to this area'))),
+    action: () => h(NButton, {
+      type: 'info',
+      secondary: true,
+      disabled: fileList.value.length === 0,
+      onClick: async () => {
+        const file = fileList.value[0]
+        fileList.value = []
+        const arrayBuffer = await file.file?.arrayBuffer()
+        const manifest = window.fcitx.UZIP.parse(arrayBuffer!)
+        if (!backup.validate(manifest)) {
+          message.error(t('Invalid zip'))
+          return
+        }
+        backup.extract(manifest)
+        window.fcitx.reload()
+        instance.destroy()
+        message.success(t('Import succeeded'))
+      },
+    }, () => t('OK')),
   })
 }
 
@@ -100,7 +114,12 @@ async function exportData() {
   const manifest: Record<string, Uint8Array> = {}
   // Fake f5a structure. Parent directory must be listed before all children so that
   // java.util.zip.ZipInputStream doesn't throw ENOENT.
-  for (const name of ['external', 'databases', 'recently_used', 'shared_prefs']) {
+  for (const name of [
+    'external',
+    'databases',
+    'recently_used',
+    'shared_prefs',
+  ]) {
     manifest[`${name}/`] = new Uint8Array()
   }
   for (const { srcPrefix, dstPrefix } of fcitx5Prefixes) {

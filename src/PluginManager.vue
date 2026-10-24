@@ -92,17 +92,29 @@ async function onUpload(files: UploadFileInfo[]) {
 
 function installedItem(option: MenuOption) {
   if (option.key === 'jyutping' && !installedPlugins.value.includes('chinese-addons')) {
-    return h(MustInstall, { plugin: 'chinese-addons' }, { default: () => h(NText, {
-      delete: true,
-    }, { default: () => option.label }) })
+    return h(MustInstall, { plugin: 'chinese-addons' }, {
+      default: () => h(NText, {
+        delete: true,
+      }, {
+        default: () => option.label,
+      }),
+    })
   }
   return option.label as string
 }
 
 function availableItem(option: MenuOption) {
-  return h(MustInstall, { plugin: option.key === 'jyutping' ? 'chinese-addons' : undefined }, { default: () => h(NA, {
-    href: `https://github.com/fcitx-contrib/fcitx5-plugins/releases/download/js/${option.key}.zip`,
-  }, { default: () => option.label }) })
+  return h(MustInstall, {
+    plugin: option.key === 'jyutping'
+      ? 'chinese-addons'
+      : undefined,
+  }, {
+    default: () => h(NA, {
+      href: `https://github.com/fcitx-contrib/fcitx5-plugins/releases/download/js/${option.key}.zip`,
+    }, {
+      default: () => option.label,
+    }),
+  })
 }
 </script>
 
